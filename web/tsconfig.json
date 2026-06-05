@@ -14,8 +14,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "baseUrl": "."
+    "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -17,6 +17,12 @@ import { searchRoutes } from './routes/search';
 import { graphRoutes } from './routes/graph';
 import { routesRoutes } from './routes/routes';
 import { qualityRoutes } from './routes/quality';
+import { analysisRoutes } from './routes/analysis';
+import { architectureRoutes } from './routes/architecture';
+import { flowsRoutes } from './routes/flows';
+import { reviewRoutes } from './routes/review';
+import { refactorRoutes } from './routes/refactor';
+import { wikiRoutes } from './routes/wiki';
 import { errorHandler } from './middleware';
 
 export interface ApiServerOptions {
@@ -45,6 +51,12 @@ export function createApiApp(options: ApiServerOptions = {}) {
   app.route('/api', graphRoutes);
   app.route('/api', routesRoutes);
   app.route('/api', qualityRoutes);
+  app.route('/api', analysisRoutes);
+  app.route('/api', architectureRoutes);
+  app.route('/api', flowsRoutes);
+  app.route('/api', reviewRoutes);
+  app.route('/api', refactorRoutes);
+  app.route('/api', wikiRoutes);
 
   // Serve frontend static files in production mode
   if (!options.dev && options.staticDir) {

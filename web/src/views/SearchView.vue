@@ -1,188 +1,176 @@
 <template>
-  <div class="search-view">
-    <a-card :bordered="false" style="margin-bottom: 16px">
+  <div class="search-page">
+    <div class="page-header">
+      <h2>代码搜索</h2>
+    </div>
+
+    <div class="search-input-area">
       <a-input-search
-        v-model="query"
-        placeholder="搜索符号名称..."
-        enter-button="搜索"
+        v-model:value="query"
+        placeholder="搜索函数、类、文件... (支持模糊匹配)"
         size="large"
-        :loading="loading"
-        @search="onSearch"
-        style="max-width: 600px; margin-right: 16px"
+        enter-button="搜索"
+        :loading="searchStore.loading"
+        @search="doSearch"
+        style="max-width: 600px"
       />
-      <a-select v-model="kindFilter" style="width: 150px" placeholder="类型过滤" allow-clear @change="onSearch">
-        <a-select-option value="class">class</a-select-option>
-        <a-select-option value="function">function</a-select-option>
-        <a-select-option value="method">method</a-select-option>
-        <a-select-option value="interface">interface</a-select-option>
-        <a-select-option value="variable">variable</a-select-option>
-        <a-select-option value="route">route</a-select-option>
-        <a-select-option value="component">component</a-select-option>
-        <a-select-option value="module">module</a-select-option>
-      </a-select>
-    </a-card>
+      <div class="search-hints">
+        <a-tag
+          v-for="hint in searchHints" :key="hint"
+          class="hint-tag" @click="query = hint; doSearch()"
+        >{{ hint }}</a-tag>
+      </div>
+    </div>
 
-    <a-row :gutter="16">
-      <a-col :span="14">
-        <a-card title="搜索结果" :bordered="false">
-          <a-list
-            :data-source="results"
-            :loading="loading"
-            size="small"
-          >
-            <a-list-item slot="renderItem" slot-scope="item">
-              <a-list-item-meta>
-                <template #title>
-                  <a @click="selectResult(item)" style="cursor: pointer">{{ item.node.name }}</a>
-                </template>
-                <template #description>
-                  <a-tag :color="kindColor(item.node.kind)" size="small">{{ item.node.kind }}</a-tag>
-                  <span style="color: #999; font-size: 12px">{{ item.node.file }}:{{ item.node.startLine }}</span>
-                </template>
-              </a-list-item-meta>
-            </a-list-item>
-          </a-list>
-          <div v-if="loading === false && results.length === 0">
-            <a-empty :description="query ? '无搜索结果' : '输入关键词开始搜索'" />
+    <a-table
+      :columns="columns"
+      :data-source="searchStore.results"
+      :loading="searchStore.loading"
+      :pagination="false"
+      row-key="id"
+      class="results-table"
+      :custom-row="(record: any) => ({ onClick: () => showDetail(record), style: { cursor: 'pointer' } })"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'name'">
+          <div class="node-name">
+            <a-tag :color="kindColor(record.node?.kind)" style="margin-right: 8px; border-radius: 4px">
+              {{ record.node?.kind }}
+            </a-tag>
+            <span class="node-qualified">{{ record.node?.name }}</span>
           </div>
-        </a-card>
-      </a-col>
+        </template>
+        <template v-if="column.key === 'file_path'">
+          <span class="file-path">{{ record.node?.filePath }}:{{ record.node?.startLine }}</span>
+        </template>
+        <template v-if="column.key === 'actions'">
+          <a-space>
+            <a-button size="small" @click.stop="showDetail(record)">详情</a-button>
+            <a-button size="small" @click.stop="goImpact(record)">影响分析</a-button>
+          </a-space>
+        </template>
+      </template>
+      <template #emptyText>
+        <a-empty :description="searched ? '未找到匹配结果' : '输入关键词开始搜索'" />
+      </template>
+    </a-table>
 
-      <a-col :span="10">
-        <a-card title="节点详情" :bordered="false">
-          <template v-if="selectedNode">
-            <a-descriptions :column="1" size="small">
-              <a-descriptions-item label="名称">{{ selectedNode.node.name }}</a-descriptions-item>
-              <a-descriptions-item label="类型">
-                <a-tag :color="kindColor(selectedNode.node.kind)">{{ selectedNode.node.kind }}</a-tag>
-              </a-descriptions-item>
-              <a-descriptions-item label="文件">{{ selectedNode.node.file }}</a-descriptions-item>
-              <a-descriptions-item label="行号">{{ selectedNode.node.startLine }} - {{ selectedNode.node.endLine }}</a-descriptions-item>
-            </a-descriptions>
+    <!-- Node Detail Drawer -->
+    <a-drawer
+      :title="selectedNode?.node?.name ?? '节点详情'"
+      :open="drawerOpen"
+      :width="560"
+      @close="drawerOpen = false"
+    >
+      <NodeDetail v-if="selectedNode" :node="selectedNode" />
 
-            <a-divider />
+      <a-divider v-if="selectedNode?.code" />
 
-            <a-tabs size="small">
-              <a-tab-pane key="code" tab="源码">
-                <code-viewer :code="selectedNode.code || ''" />
-              </a-tab-pane>
-              <a-tab-pane key="callers" tab="调用者">
-                <a-list :data-source="callChain.callers" size="small">
-                  <a-list-item slot="renderItem" slot-scope="item">
-                    <a-list-item-meta>
-                      <template #title>{{ item.node.name }}</template>
-                      <template #description>
-                        <a-tag size="small">{{ item.node.kind }}</a-tag>
-                        {{ item.edge.kind }}
-                      </template>
-                    </a-list-item-meta>
-                  </a-list-item>
-                </a-list>
-                <div v-if="callChain.callers.length === 0">
-                  <a-empty description="无调用者" />
-                </div>
-              </a-tab-pane>
-              <a-tab-pane key="callees" tab="被调用">
-                <a-list :data-source="callChain.callees" size="small">
-                  <a-list-item slot="renderItem" slot-scope="item">
-                    <a-list-item-meta>
-                      <template #title>{{ item.node.name }}</template>
-                      <template #description>
-                        <a-tag size="small">{{ item.node.kind }}</a-tag>
-                        {{ item.edge.kind }}
-                      </template>
-                    </a-list-item-meta>
-                  </a-list-item>
-                </a-list>
-                <div v-if="callChain.callees.length === 0">
-                  <a-empty description="无被调用者" />
-                </div>
-              </a-tab-pane>
-              <a-tab-pane key="impact" tab="影响分析">
-                <a-button size="small" type="primary" @click="loadImpact" :loading="impactLoading">
-                  分析影响范围
-                </a-button>
-                <div v-if="impactData" style="margin-top: 12px">
-                  <p>受影响节点: {{ impactData.nodes ? impactData.nodes.length : 0 }}</p>
-                  <p>受影响边: {{ impactData.edges ? impactData.edges.length : 0 }}</p>
-                  <a-list :data-source="impactData.nodes || []" size="small" style="max-height: 300px; overflow: auto">
-                    <a-list-item slot="renderItem" slot-scope="node">
-                      <a-list-item-meta>
-                        <template #title>{{ node.name }}</template>
-                        <template #description>
-                          <a-tag size="small">{{ node.kind }}</a-tag>
-                          {{ node.file }}
-                        </template>
-                      </a-list-item-meta>
-                    </a-list-item>
-                  </a-list>
-                </div>
-              </a-tab-pane>
-            </a-tabs>
-          </template>
-          <template v-else>
-            <a-empty description="选择搜索结果查看详情" />
-          </template>
-        </a-card>
-      </a-col>
-    </a-row>
+      <div v-if="selectedNode?.code" style="margin-top: 16px">
+        <h4>源码</h4>
+        <CodeViewer :code="selectedNode.code" :language="detectLang(selectedNode.node?.filePath)" />
+      </div>
+    </a-drawer>
   </div>
 </template>
 
-<script>
-import { mapState } from 'vuex';
-import CodeViewer from '@/components/CodeViewer.vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import api from '@/api/http'
+import NodeDetail from '@/components/shared/NodeDetail.vue'
+import CodeViewer from '@/components/CodeViewer.vue'
+import { useSearchStore } from '@/stores/search'
+import { useProjectStore } from '@/stores/project'
 
-const KIND_COLORS = {
-  class: 'blue',
-  function: 'green',
-  method: 'orange',
-  variable: 'purple',
-  interface: 'cyan',
-  route: 'gold',
-  component: 'magenta',
-  module: 'geekblue',
-};
+const router = useRouter()
+const route = useRoute()
+const searchStore = useSearchStore()
+const projectStore = useProjectStore()
 
-export default {
-  name: 'SearchView',
-  components: { CodeViewer },
-  data() {
-    return {
-      query: '',
-      kindFilter: undefined,
-      impactLoading: false,
-    };
-  },
-  computed: {
-    ...mapState('search', ['results', 'selectedNode', 'callChain', 'impactData', 'loading']),
-  },
-  methods: {
-    kindColor(kind) {
-      return KIND_COLORS[kind] || 'default';
-    },
-    onSearch() {
-      this.$store.commit('search/SET_QUERY', this.query);
-      this.$store.commit('search/SET_KIND_FILTER', this.kindFilter || null);
-      this.$store.dispatch('search/search');
-    },
-    selectResult(item) {
-      this.$store.dispatch('search/selectNode', item.node.id);
-      this.$store.dispatch('search/loadCallChain', item.node.id);
-    },
-    async loadImpact() {
-      if (this.selectedNode && this.selectedNode.node) {
-        this.impactLoading = true;
-        try {
-          await this.$store.dispatch('search/loadImpact', {
-            nodeId: this.selectedNode.node.id,
-            depth: 3,
-          });
-        } finally {
-          this.impactLoading = false;
-        }
-      }
-    },
-  },
-};
+const query = ref('')
+const searched = ref(false)
+const selectedNode = ref<any>(null)
+const drawerOpen = ref(false)
+
+const searchHints = ['auth', 'login', 'handler', 'User', 'token', 'service', 'repository']
+
+const columns = [
+  { title: '节点', key: 'name', width: 320 },
+  { title: '文件', key: 'file_path', ellipsis: true },
+  { title: '操作', key: 'actions', width: 160 },
+]
+
+function kindColor(kind: string): string {
+  const map: Record<string, string> = {
+    Function: 'blue', Class: 'green', Method: 'cyan',
+    function: 'blue', class: 'green', method: 'cyan',
+    File: 'default', Type: 'orange', Test: 'purple',
+    interface: 'cyan', variable: 'purple', route: 'gold',
+  }
+  return map[kind] || 'default'
+}
+
+function detectLang(file?: string): string {
+  if (!file) return 'typescript'
+  const ext = file.split('.').pop()?.toLowerCase()
+  const map: Record<string, string> = {
+    ts: 'typescript', tsx: 'typescript', js: 'javascript', jsx: 'javascript',
+    py: 'python', go: 'go', rs: 'rust', java: 'java', vue: 'html',
+  }
+  return map[ext || ''] || 'typescript'
+}
+
+async function doSearch() {
+  if (!query.value.trim()) return
+  searched.value = true
+  searchStore.query = query.value
+  await searchStore.search()
+}
+
+async function showDetail(record: any) {
+  try {
+    const nodeId = record.node?.id || record.nodeId
+    if (nodeId) {
+      await searchStore.selectNode(nodeId)
+      selectedNode.value = searchStore.selectedNode
+    } else {
+      selectedNode.value = record
+    }
+    drawerOpen.value = true
+  } catch (e) {
+    console.error('Failed to fetch node detail', e)
+  }
+}
+
+function goImpact(record: any) {
+  const pid = route.params.id
+  const filePath = record.node?.filePath || ''
+  router.push(`/projects/${pid}/impact?file=${encodeURIComponent(filePath)}`)
+}
+
+onMounted(() => {
+  const q = route.query.q as string
+  if (q) {
+    query.value = q
+    doSearch()
+  }
+  const pid = route.params.id as string
+  if (pid && !projectStore.currentProject) {
+    projectStore.selectProject(decodeURIComponent(pid))
+  }
+})
 </script>
+
+<style scoped>
+.search-page { max-width: 1000px; }
+.page-header { margin-bottom: 20px; }
+.page-header h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.search-input-area { margin-bottom: 24px; }
+.search-hints { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.hint-tag { cursor: pointer; }
+.results-table { background: #fff; border-radius: 8px; }
+.node-name { display: flex; align-items: center; }
+.node-qualified { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; }
+.file-path { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; color: rgba(0,0,0,0.45); }
+</style>

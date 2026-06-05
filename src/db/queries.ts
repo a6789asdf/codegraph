@@ -611,18 +611,17 @@ export class QueryBuilder {
    * mapping AND the handler implementations.
    */
   getRoutingManifest(limit: number = 40): {
-    entries: Array<{ url: string; handler: string; handlerFile: string; handlerLine: number; handlerKind: string }>;
+    entries: Array<{ url: string; method: string; framework: string; handler: string; handlerId: string; handlerFile: string; handlerLine: number; handlerKind: string }>;
     topHandlerFile: string | null;
     topHandlerFileCount: number;
     totalRoutes: number;
   } | null {
     if (!this.stmts.getRoutingManifest) {
-      // Edge kind varies across framework resolvers: Spring/Rails/
-      // Laravel/Drupal emit `references`, Express emits `calls`. Accept
-      // both — the semantic is the same (route → its handler).
       this.stmts.getRoutingManifest = this.db.prepare(`
         SELECT
           r.name AS url,
+          r.language AS framework,
+          h.id AS handler_id,
           h.name AS handler,
           h.file_path AS handler_file,
           h.start_line AS handler_line,
@@ -638,11 +637,10 @@ export class QueryBuilder {
       `);
     }
     const rows = this.stmts.getRoutingManifest.all(limit) as Array<{
-      url: string; handler: string; handler_file: string; handler_line: number; handler_kind: string;
+      url: string; framework: string; handler_id: string; handler: string; handler_file: string; handler_line: number; handler_kind: string;
     }>;
-    // Drop test/generated handlers — same hygiene as elsewhere.
     const filtered = rows.filter(r => !isLowValueFile(r.handler_file));
-    if (filtered.length < 3) return null;
+    if (filtered.length === 0) return null;
     // Identify the file holding the most handlers (the "primary handler file").
     const fileCounts = new Map<string, number>();
     for (const r of filtered) {
@@ -657,13 +655,21 @@ export class QueryBuilder {
       }
     }
     return {
-      entries: filtered.map(r => ({
-        url: r.url,
-        handler: r.handler,
-        handlerFile: r.handler_file,
-        handlerLine: r.handler_line,
-        handlerKind: r.handler_kind,
-      })),
+      entries: filtered.map(r => {
+        const parts = r.url.split(' ', 2);
+        const method = parts.length > 1 ? parts[0]! : '';
+        const urlPath = parts.length > 1 ? parts[1]! : parts[0]!;
+        return {
+          url: urlPath,
+          method,
+          framework: r.framework,
+          handler: r.handler,
+          handlerId: r.handler_id,
+          handlerFile: r.handler_file,
+          handlerLine: r.handler_line,
+          handlerKind: r.handler_kind,
+        };
+      }),
       topHandlerFile,
       topHandlerFileCount,
       totalRoutes: filtered.length,

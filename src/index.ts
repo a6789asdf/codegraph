@@ -722,10 +722,10 @@ export class CodeGraph {
    * Build a URL → handler routing manifest from the index. Each entry
    * pairs a route node (URL + method) with its handler function/method
    * via the `references` edge that framework resolvers emit. Returns
-   * null when fewer than 3 valid (non-test) routes exist.
+   * null when no valid (non-test) routes exist.
    */
   getRoutingManifest(limit?: number): {
-    entries: Array<{ url: string; handler: string; handlerFile: string; handlerLine: number; handlerKind: string }>;
+    entries: Array<{ url: string; method: string; framework: string; handler: string; handlerId: string; handlerFile: string; handlerLine: number; handlerKind: string }>;
     topHandlerFile: string | null;
     topHandlerFileCount: number;
     totalRoutes: number;

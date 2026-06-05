@@ -62,7 +62,12 @@ graphRoutes.get('/projects/:path/impact/:nodeId', projectResolver(), async (c) =
   }
 
   const impact = instance.getImpactRadius(nodeId, depth);
-  return c.json(ok(impact));
+  const serialized = {
+    nodes: Array.from(impact.nodes.values()),
+    edges: impact.edges,
+    roots: impact.roots,
+  };
+  return c.json(ok(serialized));
 });
 
 /**
@@ -83,7 +88,12 @@ graphRoutes.get('/projects/:path/traverse/:nodeId', projectResolver(), async (c)
 
   const edgeKinds = edgeKindsStr ? edgeKindsStr.split(',') as any[] : undefined;
   const subgraph = instance.traverse(nodeId, { direction: direction as any, edgeKinds, maxDepth });
-  return c.json(ok(subgraph));
+  const serialized = {
+    nodes: Array.from(subgraph.nodes.values()),
+    edges: subgraph.edges,
+    roots: subgraph.roots,
+  };
+  return c.json(ok(serialized));
 });
 
 /**
@@ -125,7 +135,12 @@ graphRoutes.get('/projects/:path/call-graph/:nodeId', projectResolver(), async (
   }
 
   const callGraph = instance.getCallGraph(nodeId, depth);
-  return c.json(ok(callGraph));
+  const serialized = {
+    nodes: Array.from(callGraph.nodes.values()),
+    edges: callGraph.edges,
+    roots: callGraph.roots,
+  };
+  return c.json(ok(serialized));
 });
 
 /**
@@ -141,5 +156,10 @@ graphRoutes.get('/projects/:path/type-hierarchy/:nodeId', projectResolver(), asy
   }
 
   const hierarchy = instance.getTypeHierarchy(nodeId);
-  return c.json(ok(hierarchy));
+  const serialized = {
+    nodes: Array.from(hierarchy.nodes.values()),
+    edges: hierarchy.edges,
+    roots: hierarchy.roots,
+  };
+  return c.json(ok(serialized));
 });
