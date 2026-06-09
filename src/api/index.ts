@@ -12,6 +12,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import * as path from 'path';
 import CodeGraph from '../index';
+import { systemRoutes } from './routes/systems';
 import { projectRoutes } from './routes/projects';
 import { searchRoutes } from './routes/search';
 import { graphRoutes } from './routes/graph';
@@ -23,6 +24,8 @@ import { flowsRoutes } from './routes/flows';
 import { reviewRoutes } from './routes/review';
 import { refactorRoutes } from './routes/refactor';
 import { wikiRoutes } from './routes/wiki';
+import { taskRoutes } from './routes/tasks';
+import { credentialRoutes } from './routes/credentials';
 import { errorHandler } from './middleware';
 
 export interface ApiServerOptions {
@@ -46,6 +49,11 @@ export function createApiApp(options: ApiServerOptions = {}) {
   app.get('/api/health', (c) => c.json({ ok: true, data: { status: 'running' } }));
 
   // Mount route groups
+  // Credential routes independent — no path conflicts
+  app.route('/api', credentialRoutes);
+  // Task routes MUST be before projectRoutes to avoid :path wildcard swallowing /tasks
+  app.route('/api', taskRoutes);
+  app.route('/api', systemRoutes);
   app.route('/api', projectRoutes);
   app.route('/api', searchRoutes);
   app.route('/api', graphRoutes);

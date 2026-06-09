@@ -17,8 +17,8 @@ export const useSearchStore = defineStore('search', {
   actions: {
     async search(query?: string) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
 
       const q = query ?? this.query
       if (!q) return
@@ -26,7 +26,7 @@ export const useSearchStore = defineStore('search', {
       this.loading = true
       this.error = null
       try {
-        this.results = await searchApi.search(projectPath, q, this.kindFilter || undefined)
+        this.results = await searchApi.search(projectId, q, this.kindFilter || undefined)
       } catch (err: any) {
         this.error = err.message
       } finally {
@@ -35,24 +35,24 @@ export const useSearchStore = defineStore('search', {
     },
     async selectNode(nodeId: string) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
 
       try {
-        this.selectedNode = await searchApi.getNode(projectPath, nodeId)
+        this.selectedNode = await searchApi.getNode(projectId, nodeId)
       } catch (err: any) {
         this.error = err.message
       }
     },
     async loadCallChain(nodeId: string) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
 
       try {
         const [callers, callees] = await Promise.all([
-          searchApi.getCallers(projectPath, nodeId),
-          searchApi.getCallees(projectPath, nodeId),
+          searchApi.getCallers(projectId, nodeId),
+          searchApi.getCallees(projectId, nodeId),
         ])
         this.callChain = { callers, callees }
       } catch (err: any) {
@@ -61,11 +61,11 @@ export const useSearchStore = defineStore('search', {
     },
     async loadImpact({ nodeId, depth }: { nodeId: string; depth?: number }) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
 
       try {
-        this.impactData = await searchApi.getImpact(projectPath, nodeId, depth)
+        this.impactData = await searchApi.getImpact(projectId, nodeId, depth)
       } catch (err: any) {
         this.error = err.message
       }

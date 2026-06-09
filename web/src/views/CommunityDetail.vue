@@ -80,7 +80,7 @@ function goBack() {
 onMounted(async () => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
-    projectStore.selectProject(decodeURIComponent(pid))
+    projectStore.selectProject(pid)
   }
   const cid = route.params.communityId as string
   if (cid) {

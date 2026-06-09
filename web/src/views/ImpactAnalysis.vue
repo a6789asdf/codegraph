@@ -168,7 +168,7 @@ function onNodeClick(node: any) {
 onMounted(() => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
-    projectStore.selectProject(decodeURIComponent(pid))
+    projectStore.selectProject(pid)
   }
   const file = route.query.file as string
   if (file) {

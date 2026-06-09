@@ -7,6 +7,7 @@
 
 import { Context, Next } from 'hono';
 import CodeGraph from '../index';
+import { getProjectPathById } from './registry';
 
 // Extend Hono's context variable map so c.get/c.set are type-safe
 declare module 'hono' {
@@ -75,6 +76,32 @@ export function projectResolver() {
     }
 
     const projectPath = decodeURIComponent(rawPath);
+
+    try {
+      const instance = await getCodeGraphInstance(projectPath);
+      c.set('codegraph', instance);
+      c.set('projectPath', projectPath);
+      return await next();
+    } catch (err: any) {
+      return c.json({ ok: false, error: `Failed to open project: ${err.message}` }, 404);
+    }
+  };
+}
+
+/**
+ * Project ID resolver middleware.
+ * Resolves a project ID (UUID) or path to a CodeGraph instance.
+ * Tries UUID lookup first, falls back to treating the parameter as a path.
+ */
+export function projectIdResolver() {
+  return async (c: Context, next: Next): Promise<Response | void> => {
+    const id = c.req.param('id');
+    if (!id) {
+      return c.json({ ok: false, error: 'Project ID is required' }, 400);
+    }
+
+    const decoded = decodeURIComponent(id);
+    const projectPath = getProjectPathById(decoded) || decoded;
 
     try {
       const instance = await getCodeGraphInstance(projectPath);

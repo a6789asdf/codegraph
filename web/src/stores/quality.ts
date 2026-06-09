@@ -15,11 +15,11 @@ export const useQualityStore = defineStore('quality', {
   actions: {
     async fetchCircularDeps() {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
       this.loading = true
       try {
-        this.circularDeps = await qualityApi.getCircularDeps(projectPath)
+        this.circularDeps = await qualityApi.getCircularDeps(projectId)
       } catch (err: any) {
         this.error = err.message
       } finally {
@@ -28,11 +28,11 @@ export const useQualityStore = defineStore('quality', {
     },
     async fetchDeadCode(kinds?: string[]) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
       this.loading = true
       try {
-        this.deadCode = await qualityApi.getDeadCode(projectPath, kinds)
+        this.deadCode = await qualityApi.getDeadCode(projectId, kinds)
       } catch (err: any) {
         this.error = err.message
       } finally {
@@ -41,20 +41,20 @@ export const useQualityStore = defineStore('quality', {
     },
     async fetchFileDeps(filePath: string) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
       try {
-        this.fileDeps = await qualityApi.getFileDeps(projectPath, filePath)
+        this.fileDeps = await qualityApi.getFileDeps(projectId, filePath)
       } catch (err: any) {
         this.error = err.message
       }
     },
     async fetchNodeMetrics(nodeId: string) {
       const projectStore = useProjectStore()
-      const projectPath = projectStore.currentProject
-      if (!projectPath) return
+      const projectId = projectStore.currentProject
+      if (!projectId) return
       try {
-        this.nodeMetrics = await qualityApi.getNodeMetrics(projectPath, nodeId)
+        this.nodeMetrics = await qualityApi.getNodeMetrics(projectId, nodeId)
       } catch (err: any) {
         this.error = err.message
       }

@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const analysisRoutes = new Hono();
 
@@ -18,7 +18,7 @@ export const analysisRoutes = new Hono();
  *   - files: comma-separated list of file paths (required)
  *   - max_depth: maximum traversal depth (default 3)
  */
-analysisRoutes.get('/projects/:path/analysis/impact', projectResolver(), async (c) => {
+analysisRoutes.get('/projects/:id/analysis/impact', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const filesStr = c.req.query('files');
   const maxDepth = parseInt(c.req.query('max_depth') || '3', 10);

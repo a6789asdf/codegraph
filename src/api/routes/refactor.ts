@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const refactorRoutes = new Hono();
 
@@ -17,7 +17,7 @@ export const refactorRoutes = new Hono();
  * Query params:
  *   - kinds: comma-separated NodeKinds (default: function,method,class,variable,constant)
  */
-refactorRoutes.get('/projects/:path/refactor/dead-code', projectResolver(), async (c) => {
+refactorRoutes.get('/projects/:id/refactor/dead-code', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const kindsStr = c.req.query('kinds');
   const kinds = kindsStr
@@ -48,7 +48,7 @@ refactorRoutes.get('/projects/:path/refactor/dead-code', projectResolver(), asyn
  * - Highly-coupled modules
  * - Duplicate patterns (same name in different files)
  */
-refactorRoutes.get('/projects/:path/refactor/suggestions', projectResolver(), async (c) => {
+refactorRoutes.get('/projects/:id/refactor/suggestions', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   const suggestions: Array<{
@@ -135,7 +135,7 @@ refactorRoutes.get('/projects/:path/refactor/suggestions', projectResolver(), as
  *   - qualified_name: current qualified name (required)
  *   - new_name: proposed new name (required)
  */
-refactorRoutes.post('/projects/:path/refactor/preview-rename', projectResolver(), async (c) => {
+refactorRoutes.post('/projects/:id/refactor/preview-rename', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const qualifiedName = c.req.query('qualified_name');
   const newName = c.req.query('new_name');

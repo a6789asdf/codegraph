@@ -7,14 +7,14 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const qualityRoutes = new Hono();
 
 /**
  * Find circular dependencies.
  */
-qualityRoutes.get('/projects/:path/circular-deps', projectResolver(), async (c) => {
+qualityRoutes.get('/projects/:id/circular-deps', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const cycles = instance.findCircularDependencies();
   return c.json(ok(cycles));
@@ -24,7 +24,7 @@ qualityRoutes.get('/projects/:path/circular-deps', projectResolver(), async (c) 
  * Find dead code (unreferenced symbols).
  * Query params: kinds (comma-separated NodeKinds)
  */
-qualityRoutes.get('/projects/:path/dead-code', projectResolver(), async (c) => {
+qualityRoutes.get('/projects/:id/dead-code', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const kindsStr = c.req.query('kinds');
   const kinds = kindsStr ? kindsStr.split(',') as any[] : undefined;
@@ -36,7 +36,7 @@ qualityRoutes.get('/projects/:path/dead-code', projectResolver(), async (c) => {
 /**
  * Get file dependencies (what this file depends on).
  */
-qualityRoutes.get('/projects/:path/file-deps/:filePath', projectResolver(), async (c) => {
+qualityRoutes.get('/projects/:id/file-deps/:filePath', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const filePath = decodeURIComponent(c.req.param('filePath')!);
 
@@ -47,7 +47,7 @@ qualityRoutes.get('/projects/:path/file-deps/:filePath', projectResolver(), asyn
 /**
  * Get file dependents (what depends on this file).
  */
-qualityRoutes.get('/projects/:path/file-dependents/:filePath', projectResolver(), async (c) => {
+qualityRoutes.get('/projects/:id/file-dependents/:filePath', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const filePath = decodeURIComponent(c.req.param('filePath')!);
 
@@ -58,7 +58,7 @@ qualityRoutes.get('/projects/:path/file-dependents/:filePath', projectResolver()
 /**
  * Get node metrics.
  */
-qualityRoutes.get('/projects/:path/metrics/:nodeId', projectResolver(), async (c) => {
+qualityRoutes.get('/projects/:id/metrics/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
 

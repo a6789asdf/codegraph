@@ -6,7 +6,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const searchRoutes = new Hono();
 
@@ -14,7 +14,7 @@ export const searchRoutes = new Hono();
  * Search symbols by name.
  * Query params: q (required), kind (optional), limit (optional)
  */
-searchRoutes.get('/projects/:path/search', projectResolver(), async (c) => {
+searchRoutes.get('/projects/:id/search', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const q = c.req.query('q');
   const kindStr = c.req.query('kind');
@@ -35,7 +35,7 @@ searchRoutes.get('/projects/:path/search', projectResolver(), async (c) => {
 /**
  * Get node detail by ID, optionally including source code.
  */
-searchRoutes.get('/projects/:path/nodes/:id', projectResolver(), async (c) => {
+searchRoutes.get('/projects/:id/nodes/:id', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('id')!;
   const includeCode = c.req.query('includeCode') !== 'false';
@@ -56,7 +56,7 @@ searchRoutes.get('/projects/:path/nodes/:id', projectResolver(), async (c) => {
 /**
  * Get full context for a node (ancestors, children, references).
  */
-searchRoutes.get('/projects/:path/nodes/:id/context', projectResolver(), async (c) => {
+searchRoutes.get('/projects/:id/nodes/:id/context', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('id')!;
 
@@ -72,7 +72,7 @@ searchRoutes.get('/projects/:path/nodes/:id/context', projectResolver(), async (
 /**
  * Get all tracked files.
  */
-searchRoutes.get('/projects/:path/files', projectResolver(), async (c) => {
+searchRoutes.get('/projects/:id/files', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const files = instance.getFiles();
   return c.json(ok(files));

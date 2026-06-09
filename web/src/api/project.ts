@@ -1,31 +1,39 @@
 import http from './http';
 
-function encodePath(projectPath: string): string {
-  return encodeURIComponent(projectPath);
-}
-
 export default {
-  listProjects(scanDir?: string) {
-    return http.get('/projects', { params: { scanDir } });
+  listProjects(scanDir?: string, systemId?: string) {
+    return http.get('/projects', { params: { scanDir, systemId } });
   },
 
-  registerProject(projectPath: string) {
-    return http.post('/projects/register', { path: projectPath });
+  registerProject(projectId: string, systemId?: string) {
+    return http.post('/projects/register', { path: projectId, systemId });
   },
 
-  getStats(projectPath: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/stats`);
+  getStats(projectId: string) {
+    return http.get(`/projects/${projectId}/stats`);
   },
 
-  getStatus(projectPath: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/status`);
+  getStatus(projectId: string) {
+    return http.get(`/projects/${projectId}/status`);
   },
 
-  triggerIndex(projectPath: string) {
-    return http.post(`/projects/${encodePath(projectPath)}/index`);
+  triggerIndex(projectId: string) {
+    return http.post(`/projects/${projectId}/index`);
   },
 
-  triggerSync(projectPath: string) {
-    return http.post(`/projects/${encodePath(projectPath)}/sync`);
+  triggerSync(projectId: string) {
+    return http.post(`/projects/${projectId}/sync`);
+  },
+
+  listSystems() {
+    return http.get<Array<{ id: string; name: string; createdAt: string; projectCount: number }>>('/systems');
+  },
+
+  createSystem(name: string) {
+    return http.post<{ id: string; name: string; createdAt: string }>('/systems', { name });
+  },
+
+  deleteSystem(id: string) {
+    return http.delete(`/systems/${id}`);
   },
 };

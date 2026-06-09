@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -22,7 +22,7 @@ export const reviewRoutes = new Hono();
  * Query params:
  *   - base: base reference (default: HEAD~1, informational only)
  */
-reviewRoutes.get('/projects/:path/review/detect-changes', projectResolver(), async (c) => {
+reviewRoutes.get('/projects/:id/review/detect-changes', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const projectPath = c.get('projectPath') as string;
   const baseRef = c.req.query('base') || 'HEAD~1';
@@ -117,7 +117,7 @@ reviewRoutes.get('/projects/:path/review/detect-changes', projectResolver(), asy
  * Query params:
  *   - target: qualified name of the function/method (required)
  */
-reviewRoutes.get('/projects/:path/review/context', projectResolver(), async (c) => {
+reviewRoutes.get('/projects/:id/review/context', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const target = c.req.query('target');
 

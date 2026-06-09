@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const routesRoutes = new Hono();
 
@@ -15,7 +15,7 @@ export const routesRoutes = new Hono();
  * Get routing manifest for the project.
  * Query params: limit (optional)
  */
-routesRoutes.get('/projects/:path/routes', projectResolver(), async (c) => {
+routesRoutes.get('/projects/:id/routes', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const limit = c.req.query('limit') ? parseInt(c.req.query('limit')!, 10) : undefined;
 
@@ -26,7 +26,7 @@ routesRoutes.get('/projects/:path/routes', projectResolver(), async (c) => {
 /**
  * Get the primary route file (densest route concentration).
  */
-routesRoutes.get('/projects/:path/top-route-file', projectResolver(), async (c) => {
+routesRoutes.get('/projects/:id/top-route-file', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const topRouteFile = instance.getTopRouteFile();
   return c.json(ok(topRouteFile));
@@ -35,7 +35,7 @@ routesRoutes.get('/projects/:path/top-route-file', projectResolver(), async (c) 
 /**
  * Get detected frameworks.
  */
-routesRoutes.get('/projects/:path/frameworks', projectResolver(), async (c) => {
+routesRoutes.get('/projects/:id/frameworks', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const frameworks = instance.getDetectedFrameworks();
   return c.json(ok(frameworks));

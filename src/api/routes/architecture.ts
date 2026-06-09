@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const architectureRoutes = new Hono();
 
@@ -16,7 +16,7 @@ export const architectureRoutes = new Hono();
  *
  * Uses a simple label-propagation-like approach on the file dependency graph.
  */
-architectureRoutes.get('/projects/:path/analysis/communities', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/analysis/communities', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   // Build file dependency graph
@@ -49,7 +49,7 @@ architectureRoutes.get('/projects/:path/analysis/communities', projectResolver()
   return c.json(ok(communities));
 });
 
-architectureRoutes.get('/projects/:path/analysis/communities/:communityId', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/analysis/communities/:communityId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const communityId = c.req.param('communityId');
 
@@ -84,7 +84,7 @@ architectureRoutes.get('/projects/:path/analysis/communities/:communityId', proj
   return c.json(ok(community));
 });
 
-architectureRoutes.get('/projects/:path/visualization/community-graph/:communityId', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/visualization/community-graph/:communityId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const communityId = c.req.param('communityId');
 
@@ -170,7 +170,7 @@ architectureRoutes.get('/projects/:path/visualization/community-graph/:community
  *
  * Hub nodes have high in-degree (many callers/references).
  */
-architectureRoutes.get('/projects/:path/analysis/hub-nodes', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/analysis/hub-nodes', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const limit = parseInt(c.req.query('limit') || '20', 10);
 
@@ -220,7 +220,7 @@ architectureRoutes.get('/projects/:path/analysis/hub-nodes', projectResolver(), 
  * Bridge nodes have high betweenness centrality — removing them
  * would disconnect parts of the graph.
  */
-architectureRoutes.get('/projects/:path/analysis/bridge-nodes', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/analysis/bridge-nodes', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const limit = parseInt(c.req.query('limit') || '20', 10);
 
@@ -296,7 +296,7 @@ architectureRoutes.get('/projects/:path/analysis/bridge-nodes', projectResolver(
 /**
  * Get knowledge gaps (files with many dependents but few imports).
  */
-architectureRoutes.get('/projects/:path/analysis/knowledge-gaps', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/analysis/knowledge-gaps', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   const files = instance.getFiles();
@@ -327,7 +327,7 @@ architectureRoutes.get('/projects/:path/analysis/knowledge-gaps', projectResolve
   return c.json(ok(gaps.slice(0, 20)));
 });
 
-architectureRoutes.get('/projects/:path/analysis/surprising-connections', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/analysis/surprising-connections', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const limit = parseInt(c.req.query('limit') || '15', 10);
 
@@ -465,7 +465,7 @@ architectureRoutes.get('/projects/:path/analysis/surprising-connections', projec
   return c.json(ok(surprising.slice(0, limit)));
 });
 
-architectureRoutes.get('/projects/:path/visualization/graph-data', projectResolver(), async (c) => {
+architectureRoutes.get('/projects/:id/visualization/graph-data', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   const VISUAL_KINDS = ['class', 'interface', 'function', 'method', 'module', 'route', 'component'] as const;

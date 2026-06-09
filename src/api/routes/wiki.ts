@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const wikiRoutes = new Hono();
 
@@ -19,7 +19,7 @@ export const wikiRoutes = new Hono();
  * - Module documentation
  * - API reference
  */
-wikiRoutes.get('/projects/:path/wiki/pages', projectResolver(), async (c) => {
+wikiRoutes.get('/projects/:id/wiki/pages', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   const pages: Array<{
@@ -81,7 +81,7 @@ wikiRoutes.get('/projects/:path/wiki/pages', projectResolver(), async (c) => {
 /**
  * Get a specific wiki page's content (Markdown).
  */
-wikiRoutes.get('/projects/:path/wiki/page/:pageId', projectResolver(), async (c) => {
+wikiRoutes.get('/projects/:id/wiki/page/:pageId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const pageId = c.req.param('pageId')!;
 
@@ -123,7 +123,7 @@ wikiRoutes.get('/projects/:path/wiki/page/:pageId', projectResolver(), async (c)
  * Since wiki is auto-generated from the graph, this is a no-op
  * that returns success.
  */
-wikiRoutes.post('/projects/:path/wiki/generate', projectResolver(), async (c) => {
+wikiRoutes.post('/projects/:id/wiki/generate', projectIdResolver(), async (c) => {
   return c.json(ok({ status: 'ok', message: 'Wiki pages are auto-generated from the code graph' }));
 });
 

@@ -81,13 +81,13 @@ function methodColor(method: string) {
 }
 
 async function loadData() {
-  const projectPath = projectStore.currentProject
-  if (!projectPath) return
+  const projectId = projectStore.currentProject
+  if (!projectId) return
   loading.value = true
   try {
     const [manifest, fws] = await Promise.all([
-      routesApi.getRoutes(projectPath),
-      routesApi.getFrameworks(projectPath),
+      routesApi.getRoutes(projectId),
+      routesApi.getFrameworks(projectId),
     ])
     routeManifest.value = manifest || { entries: [], topHandlerFile: null, topHandlerFileCount: 0, totalRoutes: 0 }
     frameworks.value = fws || []
@@ -108,7 +108,7 @@ function navigateToNode(record: any) {
 onMounted(() => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
-    projectStore.selectProject(decodeURIComponent(pid))
+    projectStore.selectProject(pid)
   }
   loadData()
 })

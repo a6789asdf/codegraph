@@ -9,10 +9,13 @@ import { Hono } from 'hono';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { getCodeGraphInstance, ok, projectResolver } from '../middleware';
+import { getCodeGraphInstance, ok, projectIdResolver } from '../middleware';
 import CodeGraph from '../../index';
 import { isInitialized } from '../../directory';
-import { getRegisteredProjects, registerProject as addToRegistry } from '../registry';
+import { getRegisteredProjects, registerProject as addToRegistry, getProjectSystemId, getProjectIdByPath } from '../registry';
+import { taskManager } from '../task-manager-shared';
+import { credentialService } from '../credential-shared';
+import { saveUploadedFile } from '../source-fetcher';
 
 export const projectRoutes = new Hono();
 
@@ -81,16 +84,19 @@ function scanForProjects(
  * Query params:
  *   - scanDir: custom root directory to scan (default: home directory)
  *   - depth: max scan depth (default: 3, max: 5)
+ *   - systemId: optional — filter to only projects belonging to this system
  */
 projectRoutes.get('/projects', async (c) => {
-  const projects: Array<{ path: string; name: string; initialized: boolean }> = [];
+  const projects: Array<{ path: string; name: string; initialized: boolean; systemId?: string | null; id: string | null }> = [];
 
   // Add projects from the global registry (registered via `codegraph init`)
   const registeredPaths = getRegisteredProjects();
   for (const p of registeredPaths) {
     const name = path.basename(p);
     const initialized = isInitialized(p);
-    projects.push({ path: p, name, initialized });
+    const systemId = getProjectSystemId(p);
+    const id = getProjectIdByPath(p);
+    projects.push({ path: p, name, initialized, systemId, id });
   }
 
   // Scan from specified or default directory
@@ -103,11 +109,18 @@ projectRoutes.get('/projects', async (c) => {
   const existingPaths = new Set(projects.map((p) => p.path));
   for (const p of scanned) {
     if (!existingPaths.has(p.path)) {
-      projects.push(p);
+      const systemId = getProjectSystemId(p.path);
+      projects.push({ ...p, systemId, id: getProjectIdByPath(p.path) });
     }
   }
 
-  return c.json(ok(projects));
+  // If systemId query param provided, filter to only that system's projects
+  const systemId = c.req.query('systemId');
+  const filtered = systemId
+    ? projects.filter((p) => p.systemId === systemId)
+    : projects;
+
+  return c.json(ok(filtered));
 });
 
 /**
@@ -117,6 +130,7 @@ projectRoutes.get('/projects', async (c) => {
 projectRoutes.post('/projects/register', async (c) => {
   const body = await c.req.json();
   const projectPath = body.path;
+  const systemId = body.systemId;
 
   if (!projectPath) {
     return c.json({ ok: false, error: 'path is required' }, 400);
@@ -128,7 +142,7 @@ projectRoutes.post('/projects/register', async (c) => {
 
   try {
     await getCodeGraphInstance(projectPath);
-    addToRegistry(projectPath);
+    addToRegistry(projectPath, systemId);
     return c.json(ok({ path: projectPath, initialized: true }));
   } catch (err: any) {
     return c.json({ ok: false, error: err.message }, 500);
@@ -138,7 +152,7 @@ projectRoutes.post('/projects/register', async (c) => {
 /**
  * Get project statistics.
  */
-projectRoutes.get('/projects/:path/stats', projectResolver(), async (c) => {
+projectRoutes.get('/projects/:id/stats', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const stats = instance.getStats();
   return c.json(ok(stats));
@@ -147,7 +161,7 @@ projectRoutes.get('/projects/:path/stats', projectResolver(), async (c) => {
 /**
  * Get project index status.
  */
-projectRoutes.get('/projects/:path/status', projectResolver(), async (c) => {
+projectRoutes.get('/projects/:id/status', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const stats = instance.getStats();
   const pendingFiles = instance.getPendingFiles();
@@ -173,7 +187,7 @@ projectRoutes.get('/projects/:path/status', projectResolver(), async (c) => {
 /**
  * Trigger full index.
  */
-projectRoutes.post('/projects/:path/index', projectResolver(), async (c) => {
+projectRoutes.post('/projects/:id/index', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   if (instance.isIndexing()) {
@@ -193,7 +207,7 @@ projectRoutes.post('/projects/:path/index', projectResolver(), async (c) => {
 /**
  * Trigger incremental sync.
  */
-projectRoutes.post('/projects/:path/sync', projectResolver(), async (c) => {
+projectRoutes.post('/projects/:id/sync', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   if (instance.isIndexing()) {
@@ -207,4 +221,96 @@ projectRoutes.post('/projects/:path/sync', projectResolver(), async (c) => {
   });
 
   return c.json({ ok: true, data: { message: 'Sync started' } }, 202);
+});
+
+const GIT_URL_RE = /^(https?:\/\/|git@|ssh:\/\/)/;
+const NAME_RE = /^[a-zA-Z0-9_-]{3,50}$/;
+
+/**
+ * Create a task to clone a git repository and build its graph.
+ */
+projectRoutes.post('/projects/clone', async (c) => {
+  const body = await c.req.json();
+  const { name, url, branch, targetPath, systemId, credentialId } = body;
+
+  if (!name || !NAME_RE.test(name)) {
+    return c.json({ ok: false, error: '项目名称格式不正确（3-50字符，仅允许字母数字下划线连字符）' }, 400);
+  }
+  if (!url || !GIT_URL_RE.test(url)) {
+    return c.json({ ok: false, error: 'Git URL 格式不正确' }, 400);
+  }
+
+  if (credentialId) {
+    const cred = credentialService.getCredentialMeta(credentialId);
+    if (!cred) {
+      return c.json({ ok: false, error: '指定的凭证不存在' }, 400);
+    }
+  }
+
+  const activeTasks = taskManager.listTasks({ status: 'active' });
+  if (activeTasks.some(t => t.name === name)) {
+    return c.json({ ok: false, error: '已存在同名任务正在运行' }, 409);
+  }
+
+  const task = await taskManager.createTask({
+    name,
+    source_type: 'git',
+    source_url: url,
+    branch: branch || undefined,
+    target_path: targetPath || undefined,
+    system_id: systemId || undefined,
+    credential_id: credentialId || undefined,
+  });
+
+  taskManager.scheduleTask(task.id);
+
+  return c.json({ ok: true, data: { taskId: task.id } }, 202);
+});
+
+/**
+ * Create a task to upload an archive and build its graph.
+ */
+projectRoutes.post('/projects/upload', async (c) => {
+  const body = await c.req.parseBody();
+  const name = body.name as string;
+  const file = body.file as File;
+  const targetPath = body.targetPath as string | undefined;
+  const systemId = body.systemId as string | undefined;
+
+  if (!name || !NAME_RE.test(name)) {
+    return c.json({ ok: false, error: '项目名称格式不正确（3-50字符，仅允许字母数字下划线连字符）' }, 400);
+  }
+  if (!file) {
+    return c.json({ ok: false, error: '请上传文件' }, 400);
+  }
+
+  const maxSize = 500 * 1024 * 1024;
+  if (file.size > maxSize) {
+    return c.json({ ok: false, error: '文件过大，最大 500MB' }, 413);
+  }
+
+  const ext = path.extname(file.name).toLowerCase();
+  if (!['.zip', '.gz', '.tgz'].includes(ext) && !file.name.toLowerCase().endsWith('.tar.gz')) {
+    return c.json({ ok: false, error: '仅支持 .zip, .tar.gz, .tgz 格式' }, 400);
+  }
+
+  const activeTasks = taskManager.listTasks({ status: 'active' });
+  if (activeTasks.some(t => t.name === name)) {
+    return c.json({ ok: false, error: '已存在同名任务正在运行' }, 409);
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const archivePath = saveUploadedFile(buffer, file.name);
+
+  const task = await taskManager.createTask({
+    name,
+    source_type: 'upload',
+    archive_path: archivePath,
+    target_path: targetPath || undefined,
+    system_id: systemId || undefined,
+  });
+
+  taskManager.scheduleTask(task.id);
+
+  return c.json({ ok: true, data: { taskId: task.id } }, 202);
 });

@@ -15,7 +15,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const flowsRoutes = new Hono();
 
@@ -246,7 +246,7 @@ function traceFlow(instance: CodeGraph, entry: EntryPoint, maxDepth: number = 3)
 /**
  * List all detected execution flows.
  */
-flowsRoutes.get('/projects/:path/flows', projectResolver(), async (c) => {
+flowsRoutes.get('/projects/:id/flows', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
 
   const page = Math.max(1, Number(c.req.query('page')) || 1);
@@ -277,7 +277,7 @@ flowsRoutes.get('/projects/:path/flows', projectResolver(), async (c) => {
 /**
  * Get detailed execution flow data for a specific flow.
  */
-flowsRoutes.get('/projects/:path/flows/:flowId', projectResolver(), async (c) => {
+flowsRoutes.get('/projects/:id/flows/:flowId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const flowId = c.req.param('flowId')!;
 

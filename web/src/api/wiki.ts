@@ -1,19 +1,15 @@
 import http from './http';
 
-function encodePath(projectPath: string): string {
-  return encodeURIComponent(projectPath);
-}
-
 export default {
-  getPages(projectPath: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/wiki/pages`);
+  getPages(projectId: string) {
+    return http.get(`/projects/${projectId}/wiki/pages`);
   },
 
-  getPage(projectPath: string, pageId: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/wiki/page/${encodeURIComponent(pageId)}`);
+  getPage(projectId: string, pageId: string) {
+    return http.get(`/projects/${projectId}/wiki/page/${encodeURIComponent(pageId)}`);
   },
 
-  generate(projectPath: string) {
-    return http.post(`/projects/${encodePath(projectPath)}/wiki/generate`);
+  generate(projectId: string) {
+    return http.post(`/projects/${projectId}/wiki/generate`);
   },
 };

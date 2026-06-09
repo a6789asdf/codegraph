@@ -1,9 +1,5 @@
 import http from './http';
 
-function encodePath(projectPath: string): string {
-  return encodeURIComponent(projectPath);
-}
-
 export interface FlowsPageResult {
   items: any[];
   total: number;
@@ -12,13 +8,13 @@ export interface FlowsPageResult {
 }
 
 export default {
-  getFlows(projectPath: string, page: number = 1, pageSize: number = 20): Promise<FlowsPageResult> {
-    return http.get(`/projects/${encodePath(projectPath)}/flows`, {
+  getFlows(projectId: string, page: number = 1, pageSize: number = 20): Promise<FlowsPageResult> {
+    return http.get(`/projects/${projectId}/flows`, {
       params: { page, pageSize },
     });
   },
 
-  getFlowDetail(projectPath: string, flowId: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/flows/${encodeURIComponent(flowId)}`);
+  getFlowDetail(projectId: string, flowId: string) {
+    return http.get(`/projects/${projectId}/flows/${encodeURIComponent(flowId)}`);
   },
 };

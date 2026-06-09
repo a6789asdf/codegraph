@@ -7,7 +7,7 @@
 
 import { Hono } from 'hono';
 import CodeGraph from '../../index';
-import { projectResolver, ok } from '../middleware';
+import { projectIdResolver, ok } from '../middleware';
 
 export const graphRoutes = new Hono();
 
@@ -15,7 +15,7 @@ export const graphRoutes = new Hono();
  * Get callers of a function/method.
  * Query params: depth (default 1)
  */
-graphRoutes.get('/projects/:path/callers/:nodeId', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/callers/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
   const depth = parseInt(c.req.query('depth') || '1', 10);
@@ -33,7 +33,7 @@ graphRoutes.get('/projects/:path/callers/:nodeId', projectResolver(), async (c) 
  * Get callees of a function/method.
  * Query params: depth (default 1)
  */
-graphRoutes.get('/projects/:path/callees/:nodeId', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/callees/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
   const depth = parseInt(c.req.query('depth') || '1', 10);
@@ -51,7 +51,7 @@ graphRoutes.get('/projects/:path/callees/:nodeId', projectResolver(), async (c) 
  * Get impact radius of a node.
  * Query params: depth (default 3)
  */
-graphRoutes.get('/projects/:path/impact/:nodeId', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/impact/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
   const depth = parseInt(c.req.query('depth') || '3', 10);
@@ -74,7 +74,7 @@ graphRoutes.get('/projects/:path/impact/:nodeId', projectResolver(), async (c) =
  * Traverse the graph from a starting node.
  * Query params: direction (default 'both'), edgeKinds (comma-separated), maxDepth (default 3)
  */
-graphRoutes.get('/projects/:path/traverse/:nodeId', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/traverse/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
   const direction = c.req.query('direction') || 'both';
@@ -100,7 +100,7 @@ graphRoutes.get('/projects/:path/traverse/:nodeId', projectResolver(), async (c)
  * Find shortest path between two nodes.
  * Query params: from (required), to (required), edgeKinds (comma-separated)
  */
-graphRoutes.get('/projects/:path/path', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/path', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const fromId = c.req.query('from');
   const toId = c.req.query('to');
@@ -124,7 +124,7 @@ graphRoutes.get('/projects/:path/path', projectResolver(), async (c) => {
  * Get call graph for a function/method.
  * Query params: depth (default 2)
  */
-graphRoutes.get('/projects/:path/call-graph/:nodeId', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/call-graph/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
   const depth = parseInt(c.req.query('depth') || '2', 10);
@@ -146,7 +146,7 @@ graphRoutes.get('/projects/:path/call-graph/:nodeId', projectResolver(), async (
 /**
  * Get type hierarchy for a class/interface.
  */
-graphRoutes.get('/projects/:path/type-hierarchy/:nodeId', projectResolver(), async (c) => {
+graphRoutes.get('/projects/:id/type-hierarchy/:nodeId', projectIdResolver(), async (c) => {
   const instance = c.get('codegraph') as CodeGraph;
   const nodeId = c.req.param('nodeId')!;
 

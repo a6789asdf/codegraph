@@ -114,11 +114,11 @@ function onLayoutChange() {
 }
 
 async function onSearchNode(query: string) {
-  const projectPath = projectStore.currentProject
-  if (!projectPath || !query) return
+  const projectId = projectStore.currentProject
+  if (!projectId || !query) return
 
   try {
-    const results = await searchApi.search(projectPath, query)
+    const results = await searchApi.search(projectId, query)
     if (results && results.length > 0) {
       const firstResult = results[0]
       const node = firstResult.node
@@ -126,8 +126,8 @@ async function onSearchNode(query: string) {
       graphStore.selectNode(node.id)
 
       const [callers, callees] = await Promise.all([
-        searchApi.getCallers(projectPath, node.id),
-        searchApi.getCallees(projectPath, node.id),
+        searchApi.getCallers(projectId, node.id),
+        searchApi.getCallees(projectId, node.id),
       ])
 
       const newNodes: any[] = []
@@ -148,18 +148,18 @@ async function onSearchNode(query: string) {
 }
 
 async function expandNode(type: string) {
-  const projectPath = projectStore.currentProject
+  const projectId = projectStore.currentProject
   const nodeId = graphStore.selectedNodeId
-  if (!projectPath || !nodeId) return
+  if (!projectId || !nodeId) return
 
   try {
     let data: any
     if (type === 'callers') {
-      data = await searchApi.getCallers(projectPath, nodeId)
+      data = await searchApi.getCallers(projectId, nodeId)
     } else if (type === 'callees') {
-      data = await searchApi.getCallees(projectPath, nodeId)
+      data = await searchApi.getCallees(projectId, nodeId)
     } else if (type === 'impact') {
-      data = await searchApi.getImpact(projectPath, nodeId)
+      data = await searchApi.getImpact(projectId, nodeId)
     }
 
     if (data) {
@@ -188,10 +188,10 @@ async function expandNode(type: string) {
 async function onNodeClick(node: any) {
   graphStore.selectNode(node.id)
   // Load code
-  const projectPath = projectStore.currentProject
-  if (!projectPath) return
+  const projectId = projectStore.currentProject
+  if (!projectId) return
   try {
-    const data = await searchApi.getNode(projectPath, node.id, true)
+    const data = await searchApi.getNode(projectId, node.id, true)
     nodeCode.value = data?.code || ''
   } catch {
     nodeCode.value = ''
@@ -205,7 +205,7 @@ function resetView() { /* ForceGraph handles zoom internally */ }
 onMounted(() => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
-    projectStore.selectProject(decodeURIComponent(pid))
+    projectStore.selectProject(pid)
   }
 })
 </script>

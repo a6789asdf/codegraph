@@ -62,7 +62,7 @@ function goBack() {
 onMounted(async () => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
-    projectStore.selectProject(decodeURIComponent(pid))
+    projectStore.selectProject(pid)
   }
   const flowId = route.params.flowId as string
   if (flowId) {

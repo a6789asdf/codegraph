@@ -162,7 +162,7 @@ function kindColor(kind: string) {
 onMounted(() => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
-    projectStore.selectProject(decodeURIComponent(pid))
+    projectStore.selectProject(pid)
   }
 })
 </script>

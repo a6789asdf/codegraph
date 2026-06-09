@@ -1,67 +1,63 @@
 import http from './http';
 
-function encodePath(projectPath: string): string {
-  return encodeURIComponent(projectPath);
-}
-
 export default {
-  search(projectPath: string, q: string, kind?: string, limit?: number) {
-    return http.get(`/projects/${encodePath(projectPath)}/search`, {
+  search(projectId: string, q: string, kind?: string, limit?: number) {
+    return http.get(`/projects/${projectId}/search`, {
       params: { q, kind, limit },
     });
   },
 
-  getNode(projectPath: string, nodeId: string, includeCode = true) {
-    return http.get(`/projects/${encodePath(projectPath)}/nodes/${encodeURIComponent(nodeId)}`, {
+  getNode(projectId: string, nodeId: string, includeCode = true) {
+    return http.get(`/projects/${projectId}/nodes/${encodeURIComponent(nodeId)}`, {
       params: { includeCode },
     });
   },
 
-  getNodeContext(projectPath: string, nodeId: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/nodes/${encodeURIComponent(nodeId)}/context`);
+  getNodeContext(projectId: string, nodeId: string) {
+    return http.get(`/projects/${projectId}/nodes/${encodeURIComponent(nodeId)}/context`);
   },
 
-  getFiles(projectPath: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/files`);
+  getFiles(projectId: string) {
+    return http.get(`/projects/${projectId}/files`);
   },
 
-  getCallers(projectPath: string, nodeId: string, depth = 1) {
-    return http.get(`/projects/${encodePath(projectPath)}/callers/${encodeURIComponent(nodeId)}`, {
+  getCallers(projectId: string, nodeId: string, depth = 1) {
+    return http.get(`/projects/${projectId}/callers/${encodeURIComponent(nodeId)}`, {
       params: { depth },
     });
   },
 
-  getCallees(projectPath: string, nodeId: string, depth = 1) {
-    return http.get(`/projects/${encodePath(projectPath)}/callees/${encodeURIComponent(nodeId)}`, {
+  getCallees(projectId: string, nodeId: string, depth = 1) {
+    return http.get(`/projects/${projectId}/callees/${encodeURIComponent(nodeId)}`, {
       params: { depth },
     });
   },
 
-  getImpact(projectPath: string, nodeId: string, depth = 3) {
-    return http.get(`/projects/${encodePath(projectPath)}/impact/${encodeURIComponent(nodeId)}`, {
+  getImpact(projectId: string, nodeId: string, depth = 3) {
+    return http.get(`/projects/${projectId}/impact/${encodeURIComponent(nodeId)}`, {
       params: { depth },
     });
   },
 
-  traverse(projectPath: string, nodeId: string, direction = 'both', edgeKinds?: string[], maxDepth = 3) {
-    return http.get(`/projects/${encodePath(projectPath)}/traverse/${encodeURIComponent(nodeId)}`, {
+  traverse(projectId: string, nodeId: string, direction = 'both', edgeKinds?: string[], maxDepth = 3) {
+    return http.get(`/projects/${projectId}/traverse/${encodeURIComponent(nodeId)}`, {
       params: { direction, edgeKinds: edgeKinds?.join(','), maxDepth },
     });
   },
 
-  findPath(projectPath: string, fromId: string, toId: string, edgeKinds?: string[]) {
-    return http.get(`/projects/${encodePath(projectPath)}/path`, {
+  findPath(projectId: string, fromId: string, toId: string, edgeKinds?: string[]) {
+    return http.get(`/projects/${projectId}/path`, {
       params: { from: fromId, to: toId, edgeKinds: edgeKinds?.join(',') },
     });
   },
 
-  getCallGraph(projectPath: string, nodeId: string, depth = 2) {
-    return http.get(`/projects/${encodePath(projectPath)}/call-graph/${encodeURIComponent(nodeId)}`, {
+  getCallGraph(projectId: string, nodeId: string, depth = 2) {
+    return http.get(`/projects/${projectId}/call-graph/${encodeURIComponent(nodeId)}`, {
       params: { depth },
     });
   },
 
-  getTypeHierarchy(projectPath: string, nodeId: string) {
-    return http.get(`/projects/${encodePath(projectPath)}/type-hierarchy/${encodeURIComponent(nodeId)}`);
+  getTypeHierarchy(projectId: string, nodeId: string) {
+    return http.get(`/projects/${projectId}/type-hierarchy/${encodeURIComponent(nodeId)}`);
   },
 };
