@@ -32,7 +32,7 @@ const projectStore = useProjectStore()
 const searchQuery = ref('')
 
 const projectName = computed(() => {
-  const proj = projectStore.projects.find(p => p.path === route.params.id)
+  const proj = projectStore.projects.find(p => p.id === route.params.id)
   return proj?.name || (route.params.id as string)
 })
 

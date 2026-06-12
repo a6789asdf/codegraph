@@ -136,17 +136,35 @@ export class TaskManager {
     return row ? rowToTask(row) : null;
   }
 
-  listTasks(filter?: { status?: string }): Task[] {
+  listTasks(filter?: { status?: string; systemId?: string }): Task[] {
     if (filter?.status) {
       if (filter.status === 'active') {
+        if (filter.systemId) {
+          const rows = this.db.prepare(
+            "SELECT * FROM tasks WHERE status IN ('pending', 'running') AND system_id = ? ORDER BY created_at DESC LIMIT 100"
+          ).all(filter.systemId);
+          return rows.map(rowToTask);
+        }
         const rows = this.db.prepare(
           "SELECT * FROM tasks WHERE status IN ('pending', 'running') ORDER BY created_at DESC LIMIT 100"
         ).all();
         return rows.map(rowToTask);
       }
+      if (filter.systemId) {
+        const rows = this.db.prepare(
+          'SELECT * FROM tasks WHERE status = ? AND system_id = ? ORDER BY created_at DESC LIMIT 100'
+        ).all(filter.status, filter.systemId);
+        return rows.map(rowToTask);
+      }
       const rows = this.db.prepare(
         'SELECT * FROM tasks WHERE status = ? ORDER BY created_at DESC LIMIT 100'
       ).all(filter.status);
+      return rows.map(rowToTask);
+    }
+    if (filter?.systemId) {
+      const rows = this.db.prepare(
+        'SELECT * FROM tasks WHERE system_id = ? ORDER BY created_at DESC LIMIT 100'
+      ).all(filter.systemId);
       return rows.map(rowToTask);
     }
     const rows = this.db.prepare(

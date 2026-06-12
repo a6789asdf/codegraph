@@ -17,9 +17,11 @@ export const useTaskStore = defineStore('task', {
   actions: {
     async fetchTasks() {
       try {
+        const projectStore = useProjectStore()
+        const systemId = projectStore.currentSystemId || undefined
         const [active, failed] = await Promise.all([
-          taskApi.list({ status: 'active' }),
-          taskApi.list({ status: 'failed' }),
+          taskApi.list({ status: 'active', systemId }),
+          taskApi.list({ status: 'failed', systemId }),
         ])
         const activeArr = Array.isArray(active) ? active : []
         const failedArr = Array.isArray(failed) ? failed : []
@@ -30,7 +32,6 @@ export const useTaskStore = defineStore('task', {
           if (!currentActiveIds.has(id)) {
             const completed = this.tasks.find(t => t.id === id && t.status === 'completed')
             if (completed) {
-              const projectStore = useProjectStore()
               projectStore.fetchProjects()
             }
           }
@@ -55,7 +56,7 @@ export const useTaskStore = defineStore('task', {
       }
     },
 
-    async createCloneTask(payload: { name: string; url: string; branch?: string; targetPath?: string; systemId?: string }) {
+    async createCloneTask(payload: { name: string; url: string; branch?: string; targetPath?: string; systemId?: string; credentialId?: string }) {
       const result = await taskApi.createClone(payload)
       await this.fetchTasks()
       this.adjustPollingInterval()

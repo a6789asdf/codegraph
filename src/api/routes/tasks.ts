@@ -12,7 +12,11 @@ export const taskRoutes = new Hono();
 
 taskRoutes.get('/projects/tasks', async (c) => {
   const status = c.req.query('status') as string | undefined;
-  const tasks = taskManager.listTasks(status ? { status } : undefined);
+  const systemId = c.req.query('systemId') as string | undefined;
+  const filter: { status?: string; systemId?: string } = {};
+  if (status) filter.status = status;
+  if (systemId) filter.systemId = systemId;
+  const tasks = taskManager.listTasks(Object.keys(filter).length > 0 ? filter : undefined);
   return c.json(ok(tasks));
 });
 

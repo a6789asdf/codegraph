@@ -17,7 +17,7 @@
           <a-button @click="zoomOut"><ZoomOutOutlined /></a-button>
           <a-button @click="resetView"><FullscreenOutlined /></a-button>
         </a-button-group>
-        <a-button danger @click="graphStore.clearGraph()"><DeleteOutlined /> 清空</a-button>
+        <a-button danger @click="clearAll"><DeleteOutlined /> 清空</a-button>
       </a-space>
     </a-card>
 
@@ -202,10 +202,21 @@ function zoomIn() { /* ForceGraph handles zoom internally */ }
 function zoomOut() { /* ForceGraph handles zoom internally */ }
 function resetView() { /* ForceGraph handles zoom internally */ }
 
+function clearAll() {
+  graphStore.clearGraph()
+  searchQuery.value = ''
+  nodeCode.value = ''
+}
+
 onMounted(() => {
   const pid = route.params.id as string
   if (pid && !projectStore.currentProject) {
     projectStore.selectProject(pid)
+  }
+  const initialNode = route.query.nodeId as string | undefined
+  if (initialNode) {
+    searchQuery.value = initialNode
+    onSearchNode(initialNode)
   }
 })
 </script>

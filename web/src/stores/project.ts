@@ -32,6 +32,11 @@ export const useProjectStore = defineStore('project', {
       const sys = state.systems.find((s) => s.id === state.currentSystemId)
       return sys?.name || ''
     },
+    currentProjectName: (state) => {
+      if (!state.currentProject) return ''
+      const proj = state.projects.find((p) => p.id === state.currentProject)
+      return proj?.name || ''
+    },
   },
   actions: {
     async fetchSystems() {

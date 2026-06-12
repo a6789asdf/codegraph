@@ -8,6 +8,7 @@ export interface Task {
   branch: string | null
   archive_path: string | null
   target_path: string
+  system_id: string | null
   status: 'pending' | 'running' | 'completed' | 'failed'
   stage: string | null
   progress_pct: number
@@ -20,9 +21,10 @@ export interface Task {
 }
 
 export default {
-  list(filter?: { status?: 'active' | 'completed' | 'failed' }) {
+  list(filter?: { status?: 'active' | 'completed' | 'failed'; systemId?: string }) {
     const params: any = {}
     if (filter?.status) params.status = filter.status
+    if (filter?.systemId) params.systemId = filter.systemId
     return http.get<Task[]>('/projects/tasks', { params })
   },
 

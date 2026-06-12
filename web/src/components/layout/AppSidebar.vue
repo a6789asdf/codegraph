@@ -16,7 +16,7 @@
         size="small"
         @change="handleProjectChange"
       >
-        <a-select-option v-for="p in projectStore.projects" :key="p.path" :value="p.path">
+        <a-select-option v-for="p in projectStore.projects" :key="p.id" :value="p.id">
           {{ p.name }}
         </a-select-option>
       </a-select>
@@ -38,6 +38,10 @@
         <a-menu-item key="search">
           <SearchOutlined />
           <span>代码搜索</span>
+        </a-menu-item>
+        <a-menu-item key="graph">
+          <DeploymentUnitOutlined />
+          <span>图谱可视化</span>
         </a-menu-item>
         <a-menu-item key="impact">
           <NodeIndexOutlined />
@@ -84,7 +88,7 @@ import { useRouter, useRoute } from 'vue-router'
 import {
   DashboardOutlined, SearchOutlined,
   NodeIndexOutlined, BranchesOutlined, BlockOutlined,
-  ApiOutlined, ToolOutlined,
+  ApiOutlined, ToolOutlined, DeploymentUnitOutlined,
   SafetyOutlined, ReadOutlined,
 } from '@ant-design/icons-vue'
 import { useProjectStore } from '@/stores/project'

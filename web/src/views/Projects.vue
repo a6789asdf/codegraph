@@ -187,6 +187,7 @@ function onTaskCreated() {
 
 function onSystemChange(value: string) {
   projectStore.selectSystem(value)
+  taskStore.fetchTasks()
 }
 
 async function handleCreateSystem() {

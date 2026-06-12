@@ -87,13 +87,25 @@
           <a-card title="快捷操作" :bordered="false" style="margin-top: 16px">
             <a-space direction="vertical" style="width: 100%" :size="12">
               <a-button type="primary" block @click="$router.push(`/projects/${$route.params.id}/search`)">
-                <SearchOutlined /> 搜索代码
+                <SearchOutlined /> 代码搜索
+              </a-button>
+              <a-button block @click="$router.push(`/projects/${$route.params.id}/graph`)">
+                <DeploymentUnitOutlined /> 图谱可视化
               </a-button>
               <a-button block @click="$router.push(`/projects/${$route.params.id}/impact`)">
                 <NodeIndexOutlined /> 影响分析
               </a-button>
+              <a-button block @click="$router.push(`/projects/${$route.params.id}/flows`)">
+                <BranchesOutlined /> 执行流追踪
+              </a-button>
               <a-button block @click="$router.push(`/projects/${$route.params.id}/architecture`)">
                 <BlockOutlined /> 架构分析
+              </a-button>
+              <a-button block @click="$router.push(`/projects/${$route.params.id}/routes`)">
+                <ApiOutlined /> 路由与桥接
+              </a-button>
+              <a-button block @click="$router.push(`/projects/${$route.params.id}/refactor`)">
+                <ToolOutlined /> 重构工具
               </a-button>
               <a-button block @click="$router.push(`/projects/${$route.params.id}/review`)">
                 <SafetyOutlined /> 代码审查
@@ -142,6 +154,7 @@ import {
   ClusterOutlined, ApartmentOutlined, FileOutlined, DatabaseOutlined,
   SearchOutlined, NodeIndexOutlined, BlockOutlined,
   SafetyOutlined, ReadOutlined, SyncOutlined, CloudUploadOutlined,
+  DeploymentUnitOutlined, BranchesOutlined, ApiOutlined, ToolOutlined,
 } from '@ant-design/icons-vue'
 import StatCard from '@/components/shared/StatCard.vue'
 import { useProjectStore } from '@/stores/project'
