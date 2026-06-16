@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>变更影响分析 - UI 设计稿</title>
+<style>
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --bg-card: #1a2236;
+  --bg-card-hover: #1f2a42;
+  --bg-elevated: #243049;
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(99,145,255,0.4);
+  --text-primary: #e8ecf4;
+  --text-secondary: #8b95a8;
+  --text-muted: #5a6478;
+  --accent: #6391ff;
+  --accent-hover: #7da5ff;
+  --accent-bg: rgba(99,145,255,0.1);
+  --success: #34d399;
+  --success-bg: rgba(52,211,153,0.1);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251,191,36,0.1);
+  --danger: #f87171;
+  --danger-bg: rgba(248,113,113,0.1);
+  --critical: #ef4444;
+  --critical-bg: rgba(239,68,68,0.12);
+  --high: #f97316;
+  --high-bg: rgba(249,115,22,0.1);
+  --medium: #eab308;
+  --medium-bg: rgba(234,179,8,0.1);
+  --low: #22c55e;
+  --low-bg: rgba(34,197,94,0.1);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+  --transition: 0.2s ease;
+  --nav-width: 220px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== Global Nav Sidebar ===== */
+.global-nav {
+  width: var(--nav-width);
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+}
+
+.nav-brand {
+  padding: 20px 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand .brand-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #818cf8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 10px;
+}
+
+.nav-brand .brand-title { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+.nav-brand .brand-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+.nav-section { padding: 16px 0 8px; flex: 1; overflow-y: auto; }
+
+.nav-section-title {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 0 20px; margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px; font-size: 13.5px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer;
+  transition: all var(--transition); position: relative;
+  border-left: 2px solid transparent;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-bg); color: var(--accent); border-left-color: var(--accent); }
+
+.nav-item .nav-icon {
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+
+.nav-item .nav-badge {
+  margin-left: auto; background: var(--bg-elevated); color: var(--text-muted);
+  font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600;
+}
+
+.nav-item.active .nav-badge { background: rgba(99,145,255,0.2); color: var(--accent); }
+
+.nav-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
+
+.nav-user { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+
+.nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--bg-elevated);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+}
+
+.nav-user-info .nav-user-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.nav-user-info .nav-user-role { font-size: 11px; color: var(--text-muted); }
+
+.nav-settings-btn {
+  margin-left: auto;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-muted);
+  font-size: 16px; cursor: pointer; transition: all var(--transition);
+  flex-shrink: 0;
+}
+.nav-settings-btn:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+
+/* ===== Main Wrapper ===== */
+.main-wrapper { margin-left: var(--nav-width); min-height: 100vh; }
+
+/* ===== Page Sections ===== */
+.page-section { display: none; animation: fadeIn 0.3s ease; }
+.page-section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Project Context Bar ===== */
+.project-context-bar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 0 36px;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.context-selector {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border);
+  cursor: pointer; transition: all var(--transition);
+  font-size: 13px; color: var(--text-secondary);
+  position: relative;
+}
+
+.context-selector:hover { border-color: var(--border-active); color: var(--text-primary); }
+.context-selector.active { border-color: var(--accent); color: var(--accent); }
+
+.context-selector .selector-label { font-size: 11px; color: var(--text-muted); margin-right: 4px; }
+.context-selector .selector-value { font-weight: 600; }
+.context-selector .selector-arrow { font-size: 10px; margin-left: 4px; color: var(--text-muted); }
+
+/* Context Dropdown */
+.context-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  width: 280px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); z-index: 100;
+  display: none; overflow: hidden;
+}
+
+.context-dropdown.show { display: block; animation: fadeIn 0.15s ease; }
+
+.context-dropdown-header {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.context-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; font-size: 13px; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition);
+}
+
+.context-dropdown-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); }
+.context-dropdown-item.active { background: var(--accent-bg); color: var(--accent); }
+
+.context-dropdown-item .item-icon {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+
+.context-dropdown-item .item-info .item-name { font-weight: 500; }
+.context-dropdown-item .item-info .item-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+.context-separator { color: var(--text-muted); font-size: 13px; }
+
+/* ===== Layout ===== */
+.layout { display: flex; min-height: calc(100vh - 52px); }
+
+.sub-sidebar {
+  width: 240px; background: var(--bg-secondary);
+  border-right: 1px solid var(--border); padding: 20px 0; flex-shrink: 0;
+}
+
+.sub-sidebar-section { margin-bottom: 24px; }
+
+.sub-sidebar-title {
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 0 20px; margin-bottom: 8px;
+}
+
+.sub-sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; font-size: 13.5px; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition);
+  border-left: 2px solid transparent;
+}
+
+.sub-sidebar-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); }
+.sub-sidebar-item.active { background: var(--accent-bg); color: var(--accent); border-left-color: var(--accent); }
+
+.sub-sidebar-item .icon {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+
+.sub-sidebar-item .badge {
+  margin-left: auto; background: var(--bg-elevated); color: var(--text-muted);
+  font-size: 11px; padding: 1px 7px; border-radius: 10px; font-weight: 500;
+}
+
+.main-content { flex: 1; padding: 28px 36px; overflow-y: auto; max-width: 1200px; }
+
+/* ===== Page Header ===== */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.page-header h1 { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+.page-header .subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: var(--radius-sm);
+  font-size: 13.5px; font-weight: 500; cursor: pointer;
+  border: none; transition: all var(--transition); font-family: inherit;
+}
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.btn-ghost { background: transparent; color: var(--text-secondary); padding: 6px 12px; }
+.btn-ghost:hover { color: var(--accent); background: var(--accent-bg); }
+.btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+.btn-danger:hover { background: rgba(248,113,113,0.2); }
+
+/* ===== Cards ===== */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; transition: all var(--transition);
+}
+.card:hover { border-color: var(--border-active); background: var(--bg-card-hover); }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+/* ===== Stat Cards ===== */
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+.stat-card .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+.stat-card .stat-value { font-size: 28px; font-weight: 700; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+.stat-card .stat-change { font-size: 11px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+/* ===== Table ===== */
+.table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--bg-secondary); }
+.table-toolbar .filters { display: flex; gap: 8px; align-items: center; }
+
+.filter-chip {
+  padding: 5px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); transition: all var(--transition);
+}
+.filter-chip:hover { border-color: var(--border-active); color: var(--text-primary); }
+.filter-chip.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+
+table { width: 100%; border-collapse: collapse; }
+
+th {
+  text-align: left; padding: 11px 20px; font-size: 12px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2);
+  white-space: nowrap;
+}
+
+td { padding: 13px 20px; font-size: 13.5px; border-bottom: 1px solid var(--border); color: var(--text-secondary); white-space: nowrap; background: var(--bg-secondary); }
+tr:hover td { background: var(--bg-card-hover); }
+tr:last-child td { border-bottom: none; }
+
+/* Sticky right column */
+.table-scroll-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.table-scroll-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-radius: 3px;
+}
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 3px;
+}
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.table-scroll-wrapper table {
+  min-width: 100%;
+  width: max-content;
+}
+
+.table-scroll-wrapper th.sticky-right,
+.table-scroll-wrapper td.sticky-right {
+  position: sticky;
+  right: 0;
+  background: #111827;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+.table-scroll-wrapper th.sticky-right {
+  background: #0d1117;
+  z-index: 6;
+}
+
+.table-scroll-wrapper tr:hover td.sticky-right {
+  background: #1f2a42;
+}
+
+/* Shadow indicator when scrolled */
+.table-scroll-wrapper td.sticky-right::before,
+.table-scroll-wrapper th.sticky-right::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.2));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.table-scroll-wrapper.is-scrolled td.sticky-right::before,
+.table-scroll-wrapper.is-scrolled th.sticky-right::before {
+  opacity: 1;
+}
+
+/* ===== Tags ===== */
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.tag-critical { background: var(--critical-bg); color: var(--critical); }
+.tag-high { background: var(--high-bg); color: var(--high); }
+.tag-medium { background: var(--medium-bg); color: var(--medium); }
+.tag-low { background: var(--low-bg); color: var(--low); }
+.tag-code { background: rgba(99,145,255,0.1); color: #7da5ff; }
+.tag-config { background: rgba(168,85,247,0.1); color: #c084fc; }
+.tag-sql { background: rgba(251,191,36,0.1); color: #fbbf24; }
+.tag-script { background: rgba(34,211,153,0.1); color: #34d399; }
+.tag-other { background: rgba(148,163,184,0.1); color: #94a3b8; }
+.tag-pending { background: rgba(148,163,184,0.1); color: #94a3b8; }
+.tag-analyzing { background: var(--accent-bg); color: var(--accent); }
+.tag-concluded { background: var(--success-bg); color: var(--success); }
+.tag-running { background: var(--accent-bg); color: var(--accent); }
+.tag-completed { background: var(--success-bg); color: var(--success); }
+.tag-failed { background: var(--danger-bg); color: var(--danger); }
+
+/* ===== Progress ===== */
+.progress-bar { height: 4px; background: var(--bg-elevated); border-radius: 2px; overflow: hidden; width: 120px; }
+.progress-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.3s ease; }
+.progress-fill.success { background: var(--success); }
+.progress-fill.danger { background: var(--danger); }
+
+/* ===== Code ===== */
+code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 12.5px; }
+.file-path {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 12.5px; color: var(--text-secondary);
+  background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;
+}
+
+/* ===== Drawer ===== */
+.drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; }
+.drawer-overlay.active { display: flex; justify-content: flex-end; }
+
+.drawer {
+  width: 560px; background: var(--bg-secondary);
+  border-left: 1px solid var(--border); height: 100vh;
+  overflow-y: auto; animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+.drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.drawer-header h3 { font-size: 16px; font-weight: 600; }
+.drawer-body { padding: 24px; }
+
+/* ===== Form ===== */
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 9px 14px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text-primary); font-size: 13.5px; font-family: inherit;
+  transition: border-color var(--transition);
+}
+.form-input:focus { outline: none; border-color: var(--accent); }
+.form-input::placeholder { color: var(--text-muted); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-select {
+  width: 100%; padding: 9px 14px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text-primary); font-size: 13.5px; font-family: inherit;
+  appearance: none; cursor: pointer;
+}
+
+/* ===== Diff Viewer ===== */
+.diff-viewer {
+  background: var(--bg-primary); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 12.5px; line-height: 1.7;
+}
+.diff-line { padding: 1px 16px; display: flex; gap: 12px; }
+.diff-line .line-num { color: var(--text-muted); min-width: 36px; text-align: right; user-select: none; }
+.diff-line.added { background: rgba(34,197,94,0.08); color: #86efac; }
+.diff-line.removed { background: rgba(239,68,68,0.08); color: #fca5a5; }
+.diff-line.context { color: var(--text-muted); }
+
+/* ===== Breadcrumb ===== */
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+.breadcrumb a { color: var(--text-secondary); text-decoration: none; transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { color: var(--text-muted); }
+
+/* ===== Impact Graph Mini ===== */
+.impact-graph-mini {
+  background: var(--bg-primary); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; height: 200px;
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.graph-nodes { position: relative; width: 100%; height: 100%; }
+.graph-node {
+  position: absolute; width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; border: 2px solid; z-index: 2;
+}
+.graph-node.center { background: var(--critical-bg); border-color: var(--critical); color: var(--critical); width: 40px; height: 40px; font-size: 12px; }
+.graph-node.depth1 { background: var(--high-bg); border-color: var(--high); color: var(--high); }
+.graph-node.depth2 { background: var(--medium-bg); border-color: var(--medium); color: var(--medium); }
+
+/* ===== Pagination ===== */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); background: var(--bg-secondary); border-radius: 0 0 var(--radius) var(--radius); }
+.pagination .info { font-size: 12.5px; color: var(--text-muted); }
+.pagination .pages { display: flex; gap: 4px; }
+.page-btn {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); font-size: 13px; cursor: pointer;
+  border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all var(--transition);
+}
+.page-btn:hover { border-color: var(--border-active); }
+.page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ===== Risk Score Gauge ===== */
+.risk-gauge { width: 100px; height: 100px; position: relative; margin: 0 auto; }
+.risk-gauge svg { transform: rotate(-90deg); }
+.risk-gauge .score-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.risk-gauge .score-value { font-size: 24px; font-weight: 700; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+.risk-gauge .score-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+/* ===== Timeline ===== */
+.timeline { padding: 0; }
+.timeline-item { display: flex; gap: 14px; padding-bottom: 20px; position: relative; }
+.timeline-item:not(:last-child)::after { content: ''; position: absolute; left: 11px; top: 26px; bottom: 0; width: 1px; background: var(--border); }
+.timeline-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; z-index: 1; }
+.timeline-dot.success { background: var(--success-bg); color: var(--success); }
+.timeline-dot.active { background: var(--accent-bg); color: var(--accent); }
+.timeline-dot.pending { background: rgba(148,163,184,0.1); color: #94a3b8; }
+.timeline-content { flex: 1; }
+.timeline-content .title { font-size: 13.5px; font-weight: 500; color: var(--text-primary); }
+.timeline-content .time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ===== Section Divider ===== */
+.section-divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* ===== Home Page Specific ===== */
+.home-content { padding: 0; max-width: 100%; }
+
+.home-title-bar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 36px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.system-selector {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border);
+  cursor: pointer; transition: all var(--transition);
+  font-size: 14px; color: var(--text-primary);
+  position: relative; font-weight: 600;
+}
+
+.system-selector:hover { border-color: var(--border-active); }
+.system-selector .sys-arrow { font-size: 10px; color: var(--text-muted); margin-left: 4px; }
+
+.system-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  width: 320px; background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); z-index: 100;
+  display: none; overflow: hidden;
+}
+
+.system-dropdown.show { display: block; animation: fadeIn 0.15s ease; }
+
+.system-dropdown-header {
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.system-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; font-size: 13px; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition);
+}
+
+.system-dropdown-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); }
+.system-dropdown-item.active { background: var(--accent-bg); color: var(--accent); }
+
+.system-dropdown-item .sys-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+
+.system-dropdown-item .sys-info .sys-name { font-weight: 600; font-size: 13.5px; }
+.system-dropdown-item .sys-info .sys-code { font-size: 11px; color: var(--text-muted); margin-top: 1px; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+
+.home-title-bar .title-sep {
+  width: 1px; height: 24px; background: var(--border); margin: 0 4px;
+}
+
+.home-title-bar .title-text {
+  font-size: 13px; color: var(--text-muted); font-weight: 400;
+}
+
+.home-project-area { padding: 28px 36px; }
+
+.home-project-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.home-project-header h2 { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+.home-project-header .project-count { font-size: 13px; color: var(--text-muted); margin-left: 8px; font-weight: 400; }
+
+.project-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+
+.project-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+  cursor: pointer; transition: all var(--transition);
+}
+
+.project-card:hover { border-color: var(--border-active); background: var(--bg-card-hover); transform: translateY(-1px); }
+
+.project-card .project-name {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+
+.project-card .project-repo { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+.project-card .project-stats { display: flex; gap: 16px; }
+
+.project-card .project-stat { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); }
+.project-card .project-stat .stat-num { font-weight: 700; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 300; display: none; align-items: center; justify-content: center;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  width: 440px; background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 { font-size: 16px; font-weight: 600; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .sub-sidebar { width: 200px; }
+}
+@media (max-width: 900px) {
+  .sub-sidebar { display: none; }
+  .stat-row { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: 1fr; }
+  .project-list { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Global Nav Sidebar ===== -->
+<nav class="global-nav">
+  <div class="nav-brand">
+    <div class="brand-icon">CI</div>
+    <div class="brand-title">变更影响分析</div>
+    <div class="brand-sub">Change Impact Analysis</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">导航</div>
+    <div class="nav-item active" onclick="switchPage('home', this)">
+      <span class="nav-icon">&#9737;</span> 项目管理
+    </div>
+    <div class="nav-item" onclick="switchPage('tasks', this)">
+      <span class="nav-icon">&#9881;</span> 任务管理
+      <span class="nav-badge">1</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('report', this)">
+      <span class="nav-icon">&#9733;</span> 报告分析
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <div class="nav-user">
+      <div class="nav-avatar">A</div>
+      <div class="nav-user-info">
+        <div class="nav-user-name">Admin</div>
+        <div class="nav-user-role">管理员</div>
+      </div>
+      <button class="nav-settings-btn" onclick="toggleSettings()" title="系统设置">&#9881;</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Main Content Area ===== -->
+<div class="main-wrapper">
+
+<!-- ===== Page: Home ===== -->
+<div class="page-section active" id="page-home">
+  <div class="home-content">
+    <!-- Title Bar with System Selector -->
+    <div class="home-title-bar">
+      <div class="system-selector" onclick="toggleDropdown('home-sys-dropdown')">
+        <span>&#9672;</span>
+        <span>核心业务系统</span>
+        <span class="sys-arrow">&#9662;</span>
+        <div class="system-dropdown" id="home-sys-dropdown">
+          <div class="system-dropdown-header">切换系统</div>
+          <div class="system-dropdown-item active" onclick="event.stopPropagation();switchSystem('核心业务系统','CORE')">
+            <div class="sys-icon" style="background:linear-gradient(135deg,#6391ff,#818cf8);">核</div>
+            <div class="sys-info"><div class="sys-name">核心业务系统</div><div class="sys-code">CORE-BIZ</div></div>
+          </div>
+          <div class="system-dropdown-item" onclick="event.stopPropagation();switchSystem('基础平台系统','PLATFORM')">
+            <div class="sys-icon" style="background:linear-gradient(135deg,#34d399,#22d3ee);">基</div>
+            <div class="sys-info"><div class="sys-name">基础平台系统</div><div class="sys-code">PLATFORM</div></div>
+          </div>
+          <div class="system-dropdown-item" onclick="event.stopPropagation();switchSystem('数据中台','DATA')">
+            <div class="sys-icon" style="background:linear-gradient(135deg,#fbbf24,#f97316);">数</div>
+            <div class="sys-info"><div class="sys-name">数据中台</div><div class="sys-code">DATA-MID</div></div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" style="padding:6px 14px;font-size:12.5px;" onclick="openModal('modal-new-system')">+ 新建系统</button>
+      <div class="title-sep"></div>
+      <span class="title-text">选择项目开始变更影响分析</span>
+    </div>
+
+    <!-- Project Area -->
+    <div class="home-project-area">
+      <div class="home-project-header">
+        <div style="display:flex;align-items:baseline;">
+          <h2>项目列表</h2>
+          <span class="project-count" id="project-count">5 个项目</span>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-new-project')">+ 创建项目</button>
+      </div>
+
+      <div class="table-scroll-wrapper" id="project-list">
+        <table>
+          <thead>
+            <tr>
+              <th>项目名称</th>
+              <th>代码仓库</th>
+              <th>默认分支</th>
+              <th>任务数</th>
+              <th>已完成</th>
+              <th>进行中</th>
+              <th>创建人</th>
+              <th>创建时间 &#8595;</th>
+              <th>更新时间</th>
+              <th class="sticky-right">操作</th>
+            </tr>
+          </thead>
+          <tbody id="project-tbody">
+            <tr onclick="enterProject()" style="cursor:pointer;">
+              <td style="font-weight:600;color:var(--text-primary);">notification-svc</td>
+              <td><span class="mono" style="font-size:11px;color:var(--text-secondary);">git@github.com:org/notification-svc.git</span></td>
+              <td><span class="tag tag-code">main</span></td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">1</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--success);">1</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--text-muted);">0</td>
+              <td style="font-size:12.5px;">王五</td>
+              <td style="font-size:12.5px;">2026-04-10</td>
+              <td style="font-size:12.5px;">2026-05-15</td>
+              <td class="sticky-right"><button class="btn-ghost" style="font-size:12px;">进入</button></td>
+            </tr>
+            <tr onclick="enterProject()" style="cursor:pointer;">
+              <td style="font-weight:600;color:var(--text-primary);">payment-gateway</td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span class="mono" style="font-size:11px;color:var(--text-secondary);">git@github.com:org/payment-gateway.git</span>
+                  <span class="mono" style="font-size:11px;color:var(--text-muted);">git@github.com:org/payment-sdk.git</span>
+                </div>
+              </td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span class="tag tag-code">main</span>
+                  <span class="tag tag-code">develop</span>
+                </div>
+              </td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">2</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--success);">2</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--text-muted);">0</td>
+              <td style="font-size:12.5px;">张三</td>
+              <td style="font-size:12.5px;">2026-03-05</td>
+              <td style="font-size:12.5px;">2026-05-28</td>
+              <td class="sticky-right"><button class="btn-ghost" style="font-size:12px;">进入</button></td>
+            </tr>
+            <tr onclick="enterProject()" style="cursor:pointer;">
+              <td style="font-weight:600;color:var(--text-primary);">api-gateway</td>
+              <td><span class="mono" style="font-size:11px;color:var(--text-secondary);">git@github.com:org/api-gateway.git</span></td>
+              <td><span class="tag tag-code">main</span></td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">4</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--success);">3</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--warning);">1</td>
+              <td style="font-size:12.5px;">李四</td>
+              <td style="font-size:12.5px;">2026-02-28</td>
+              <td style="font-size:12.5px;">2026-06-12</td>
+              <td class="sticky-right"><button class="btn-ghost" style="font-size:12px;">进入</button></td>
+            </tr>
+            <tr onclick="enterProject()" style="cursor:pointer;">
+              <td style="font-weight:600;color:var(--text-primary);">order-service</td>
+              <td><span class="mono" style="font-size:11px;color:var(--text-secondary);">git@github.com:org/order-service.git</span></td>
+              <td><span class="tag tag-code">develop</span></td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">5</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--success);">4</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--warning);">1</td>
+              <td style="font-size:12.5px;">李四</td>
+              <td style="font-size:12.5px;">2026-02-20</td>
+              <td style="font-size:12.5px;">2026-06-10</td>
+              <td class="sticky-right"><button class="btn-ghost" style="font-size:12px;">进入</button></td>
+            </tr>
+            <tr onclick="enterProject()" style="cursor:pointer;">
+              <td style="font-weight:600;color:var(--text-primary);">user-service</td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span class="mono" style="font-size:11px;color:var(--text-secondary);">git@github.com:org/user-service.git</span>
+                  <span class="mono" style="font-size:11px;color:var(--text-muted);">git@github.com:org/user-service-common.git</span>
+                </div>
+              </td>
+              <td>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                  <span class="tag tag-code">main</span>
+                  <span class="tag tag-code">main</span>
+                </div>
+              </td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">3</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--success);">2</td>
+              <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--warning);">1</td>
+              <td style="font-size:12.5px;">张三</td>
+              <td style="font-size:12.5px;">2026-01-15</td>
+              <td style="font-size:12.5px;">2026-06-14</td>
+              <td class="sticky-right"><button class="btn-ghost" style="font-size:12px;">进入</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="project-pagination">
+        <div class="info">显示 1-5 / 共 5 条</div>
+        <div class="pages">
+          <button class="page-btn" disabled>&#8249;</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn" disabled>&#8250;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Task Management ===== -->
+<div class="page-section" id="page-tasks">
+  <!-- Project Context Bar -->
+  <div class="project-context-bar">
+    <div class="context-selector" onclick="toggleDropdown('sys-dropdown')">
+      <span class="selector-label">系统</span>
+      <span class="selector-value">核心业务系统</span>
+      <span class="selector-arrow">&#9662;</span>
+      <div class="context-dropdown" id="sys-dropdown">
+        <div class="context-dropdown-header">切换系统</div>
+        <div class="context-dropdown-item active">
+          <div class="item-icon" style="background:linear-gradient(135deg,#6391ff,#818cf8);">核</div>
+          <div class="item-info"><div class="item-name">核心业务系统</div><div class="item-meta">5 个项目</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:linear-gradient(135deg,#34d399,#22d3ee);">基</div>
+          <div class="item-info"><div class="item-name">基础平台系统</div><div class="item-meta">3 个项目</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:linear-gradient(135deg,#fbbf24,#f97316);">数</div>
+          <div class="item-info"><div class="item-name">数据中台</div><div class="item-meta">2 个项目</div></div>
+        </div>
+      </div>
+    </div>
+    <span class="context-separator">/</span>
+    <div class="context-selector" onclick="toggleDropdown('proj-dropdown')">
+      <span class="selector-label">项目</span>
+      <span class="selector-value">user-service</span>
+      <span class="selector-arrow">&#9662;</span>
+      <div class="context-dropdown" id="proj-dropdown">
+        <div class="context-dropdown-header">切换项目</div>
+        <div class="context-dropdown-item active">
+          <div class="item-icon" style="background:var(--bg-elevated);color:var(--accent);">&#9654;</div>
+          <div class="item-info"><div class="item-name">user-service</div><div class="item-meta">3 个任务</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:var(--bg-elevated);color:var(--accent);">&#9654;</div>
+          <div class="item-info"><div class="item-name">order-service</div><div class="item-meta">5 个任务</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:var(--bg-elevated);color:var(--accent);">&#9654;</div>
+          <div class="item-info"><div class="item-name">payment-gateway</div><div class="item-meta">2 个任务</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:28px 36px;">
+    <div class="page-header">
+      <div>
+        <h1>变更影响分析任务</h1>
+        <div class="subtitle">user-service &middot; 2 个代码仓库 &middot; 管理项目的变更分析任务</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('modal-new-task')">+ 创建任务</button>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-label">总任务数</div><div class="stat-value" style="color:var(--accent);">3</div></div>
+      <div class="stat-card"><div class="stat-label">运行中</div><div class="stat-value" style="color:var(--warning);">1</div></div>
+      <div class="stat-card"><div class="stat-label">已完成</div><div class="stat-value" style="color:var(--success);">1</div></div>
+      <div class="stat-card"><div class="stat-label">失败</div><div class="stat-value" style="color:var(--danger);">1</div></div>
+    </div>
+
+    <!-- Task List -->
+    <div class="table-scroll-wrapper" id="task-table-wrapper">
+      <div class="table-toolbar" style="position:sticky;top:0;z-index:10;background:var(--bg-secondary);">
+        <div class="filters">
+          <span class="filter-chip active">全部 (3)</span>
+          <span class="filter-chip">运行中 (1)</span>
+          <span class="filter-chip">已完成 (1)</span>
+          <span class="filter-chip">失败 (1)</span>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>任务名称</th>
+            <th>代码仓库</th>
+            <th>版本范围</th>
+            <th>状态</th>
+            <th>进度</th>
+            <th>变更文件</th>
+            <th>变更项</th>
+            <th>分析进度</th>
+            <th>风险评分</th>
+            <th>耗时</th>
+            <th>创建人</th>
+            <th>创建时间 &#8595;</th>
+            <th>更新时间</th>
+            <th class="sticky-right">操作</th>
+          </tr>
+        </thead>
+        <tbody id="task-tbody">
+          <!-- Running Task - multi-repo -->
+          <tr>
+            <td style="font-weight:600;color:var(--text-primary);">6月迭代变更分析</td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span class="mono" style="font-size:11px;color:var(--text-secondary);">user-service</span>
+                <span class="mono" style="font-size:11px;color:var(--text-muted);">user-service-common</span>
+              </div>
+            </td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span class="mono" style="font-size:11px;">v2.0.0 → v2.1.0</span>
+                <span class="mono" style="font-size:11px;">v1.5.0 → v1.6.0</span>
+              </div>
+            </td>
+            <td><span class="tag tag-running">&#9679; 运行中</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="progress-bar" style="width:80px;"><div class="progress-fill" style="width:65%"></div></div>
+                <span style="font-size:12px;color:var(--accent);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">65%</span>
+              </div>
+            </td>
+            <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">2,034</td>
+            <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">3,847</td>
+            <td style="font-size:12.5px;color:var(--text-muted);">-</td>
+            <td style="font-size:12.5px;">3m 42s</td>
+            <td style="font-size:12.5px;">张三</td>
+            <td style="font-size:12.5px;">2026-06-16 10:30</td>
+            <td style="font-size:12.5px;">2026-06-16 10:34</td>
+            <td class="sticky-right">
+              <button class="btn-ghost" style="font-size:12px;" title="取消" onclick="event.stopPropagation();">&#10005;</button>
+            </td>
+          </tr>
+          <!-- Completed Task - multi-repo -->
+          <tr onclick="switchPage('report',document.querySelectorAll('.nav-item')[2])" style="cursor:pointer;">
+            <td style="font-weight:600;color:var(--text-primary);">5月迭代变更分析</td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span class="mono" style="font-size:11px;color:var(--text-secondary);">user-service</span>
+                <span class="mono" style="font-size:11px;color:var(--text-muted);">user-service-common</span>
+              </div>
+            </td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span class="mono" style="font-size:11px;">v1.9.0 → v2.0.0</span>
+                <span class="mono" style="font-size:11px;">v1.4.0 → v1.5.0</span>
+              </div>
+            </td>
+            <td><span class="tag tag-completed">&#10003; 已完成</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="progress-bar" style="width:80px;"><div class="progress-fill success" style="width:100%"></div></div>
+                <span style="font-size:12px;color:var(--success);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">100%</span>
+              </div>
+            </td>
+            <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">1,856</td>
+            <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">2,943</td>
+            <td><span style="font-weight:700;color:var(--high);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">0.72</span></td>
+            <td style="font-size:12.5px;">7m 18s</td>
+            <td style="font-size:12.5px;">张三</td>
+            <td style="font-size:12.5px;">2026-05-20 14:15</td>
+            <td style="font-size:12.5px;">2026-05-20 14:22</td>
+            <td class="sticky-right">
+              <button class="btn-ghost" style="font-size:12px;color:var(--accent);" onclick="event.stopPropagation();switchPage('report',document.querySelectorAll('.nav-item')[2])">报告</button>
+              <button class="btn-ghost" style="font-size:12px;" title="删除" onclick="event.stopPropagation();">&#128465;</button>
+            </td>
+          </tr>
+          <!-- Failed Task - single repo -->
+          <tr>
+            <td style="font-weight:600;color:var(--text-primary);">4月迭代变更分析</td>
+            <td><span class="mono" style="font-size:11px;color:var(--text-secondary);">user-service</span></td>
+            <td><span class="mono" style="font-size:11px;">v1.8.0 → v1.9.0</span></td>
+            <td><span class="tag tag-failed">&#10007; 失败</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="progress-bar" style="width:80px;"><div class="progress-fill danger" style="width:38%"></div></div>
+                <span style="font-size:12px;color:var(--danger);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">38%</span>
+              </div>
+            </td>
+            <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">1,203</td>
+            <td style="font-size:12.5px;color:var(--text-muted);">-</td>
+            <td style="font-size:12.5px;color:var(--text-muted);">-</td>
+            <td style="font-size:12.5px;">2m 05s</td>
+            <td style="font-size:12.5px;">李四</td>
+            <td style="font-size:12.5px;">2026-04-18 09:00</td>
+            <td style="font-size:12.5px;">2026-04-18 09:02</td>
+            <td class="sticky-right">
+              <button class="btn-ghost" style="font-size:12px;color:var(--warning);" title="重试" onclick="event.stopPropagation();">&#8635; 重试</button>
+              <button class="btn-ghost" style="font-size:12px;" title="删除" onclick="event.stopPropagation();">&#128465;</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination" id="task-pagination">
+      <div class="info">显示 1-3 / 共 3 条</div>
+      <div class="pages">
+        <button class="page-btn" disabled>&#8249;</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn" disabled>&#8250;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Report ===== -->
+<div class="page-section" id="page-report">
+  <div class="project-context-bar">
+    <div class="context-selector" onclick="toggleDropdown('sys-dropdown2')">
+      <span class="selector-label">系统</span>
+      <span class="selector-value">核心业务系统</span>
+      <span class="selector-arrow">&#9662;</span>
+      <div class="context-dropdown" id="sys-dropdown2">
+        <div class="context-dropdown-header">切换系统</div>
+        <div class="context-dropdown-item active">
+          <div class="item-icon" style="background:linear-gradient(135deg,#6391ff,#818cf8);">核</div>
+          <div class="item-info"><div class="item-name">核心业务系统</div><div class="item-meta">5 个项目</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:linear-gradient(135deg,#34d399,#22d3ee);">基</div>
+          <div class="item-info"><div class="item-name">基础平台系统</div><div class="item-meta">3 个项目</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:linear-gradient(135deg,#fbbf24,#f97316);">数</div>
+          <div class="item-info"><div class="item-name">数据中台</div><div class="item-meta">2 个项目</div></div>
+        </div>
+      </div>
+    </div>
+    <span class="context-separator">/</span>
+    <div class="context-selector" onclick="toggleDropdown('proj-dropdown2')">
+      <span class="selector-label">项目</span>
+      <span class="selector-value">user-service</span>
+      <span class="selector-arrow">&#9662;</span>
+      <div class="context-dropdown" id="proj-dropdown2">
+        <div class="context-dropdown-header">切换项目</div>
+        <div class="context-dropdown-item active">
+          <div class="item-icon" style="background:var(--bg-elevated);color:var(--accent);">&#9654;</div>
+          <div class="item-info"><div class="item-name">user-service</div><div class="item-meta">3 个任务</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:var(--bg-elevated);color:var(--accent);">&#9654;</div>
+          <div class="item-info"><div class="item-name">order-service</div><div class="item-meta">5 个任务</div></div>
+        </div>
+      </div>
+    </div>
+    <span class="context-separator">/</span>
+    <div class="context-selector" onclick="toggleDropdown('task-dropdown2')">
+      <span class="selector-label">任务</span>
+      <span class="selector-value">5月迭代变更分析</span>
+      <span class="selector-arrow">&#9662;</span>
+      <div class="context-dropdown" id="task-dropdown2">
+        <div class="context-dropdown-header">已完成任务</div>
+        <div class="context-dropdown-item active">
+          <div class="item-icon" style="background:var(--success-bg);color:var(--success);font-size:10px;">&#10003;</div>
+          <div class="item-info"><div class="item-name">5月迭代变更分析</div><div class="item-meta">v1.9.0 → v2.0.0 &middot; 风险 0.72</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:var(--success-bg);color:var(--success);font-size:10px;">&#10003;</div>
+          <div class="item-info"><div class="item-name">3月迭代变更分析</div><div class="item-meta">v1.7.0 → v1.8.0 &middot; 风险 0.45</div></div>
+        </div>
+        <div class="context-dropdown-item">
+          <div class="item-icon" style="background:var(--success-bg);color:var(--success);font-size:10px;">&#10003;</div>
+          <div class="item-info"><div class="item-name">2月迭代变更分析</div><div class="item-meta">v1.6.0 → v1.7.0 &middot; 风险 0.38</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:28px 36px;">
+    <div class="page-header">
+      <div><h1>变更影响报告</h1><div class="subtitle">5月迭代变更分析 &middot; 2 个仓库 &middot; 生成于 2026-06-16 10:45</div></div>
+      <div class="header-actions">
+        <button class="btn btn-secondary">导出 &#9660;</button>
+        <button class="btn btn-primary">批量分析</button>
+      </div>
+    </div>
+
+    <!-- Report Overview Cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:20px;">
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">变更概览</div>
+        <div style="display:flex;gap:20px;">
+          <div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">变更文件</div><div style="font-size:24px;font-weight:700;color:var(--accent);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">254</div></div>
+          <div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">变更项</div><div style="font-size:24px;font-weight:700;color:var(--warning);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">387</div></div>
+          <div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">受影响测试</div><div style="font-size:24px;font-weight:700;color:var(--danger);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">342</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">综合风险评分</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="risk-gauge">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--bg-elevated)" stroke-width="8"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--high)" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="92" stroke-linecap="round"/>
+            </svg>
+            <div class="score-text"><div class="score-value" style="color:var(--high);">0.65</div><div class="score-label">HIGH</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">风险分布</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-critical" style="width:40px;justify-content:center;font-size:11px;">严重</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:8%;height:100%;background:var(--critical);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">12</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-high" style="width:40px;justify-content:center;font-size:11px;">高</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:22%;height:100%;background:var(--high);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">35</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-medium" style="width:40px;justify-content:center;font-size:11px;">中</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:45%;height:100%;background:var(--medium);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">78</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-low" style="width:40px;justify-content:center;font-size:11px;">低</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:75%;height:100%;background:var(--low);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">129</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">分析进度</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span style="color:var(--text-secondary);">已分析</span><span style="color:var(--success);">86 / 254</span></div>
+            <div style="height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:34%;height:100%;background:var(--success);border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span style="color:var(--text-secondary);">已结论</span><span style="color:var(--accent);">52 / 86</span></div>
+            <div style="height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:60%;height:100%;background:var(--accent);border-radius:3px;"></div></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:2px;">
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--success);"></span><span style="color:var(--text-muted);">已分析 86</span></div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span><span style="color:var(--text-muted);">分析中 34</span></div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text-muted);"></span><span style="color:var(--text-muted);">待分析 134</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-toolbar">
+          <div class="filters">
+            <span class="filter-chip active">全部 (254)</span>
+            <span class="filter-chip">user-service (186)</span>
+            <span class="filter-chip">user-service-common (68)</span>
+            <span style="color:var(--text-muted);font-size:12px;margin:0 4px;">|</span>
+            <span class="filter-chip">代码类 (162)</span>
+            <span class="filter-chip">配置类 (48)</span>
+            <span class="filter-chip">SQL类 (22)</span>
+            <span class="filter-chip">脚本类 (15)</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="form-select" style="width:120px;padding:6px 10px;font-size:12px;"><option>风险等级</option><option>严重</option><option>高</option><option>中</option><option>低</option></select>
+            <select class="form-select" style="width:120px;padding:6px 10px;font-size:12px;"><option>分析状态</option><option>待分析</option><option>分析中</option><option>已结论</option></select>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th style="width:30px;"><input type="checkbox"></th><th>代码仓库</th><th>文件路径</th><th>分类</th><th>变更类型</th><th>风险等级</th><th>影响节点</th><th>分析状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">src/auth/token_validator.py</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-critical">严重</span></td><td style="font-family:monospace;font-size:12.5px;">24</td><td><span class="tag tag-concluded">已结论</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">src/api/user_handler.go</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">18</td><td><span class="tag tag-concluded">已结论</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">config/database.yaml</span></td><td><span class="tag tag-config">配置</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">12</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;color:var(--text-muted);">user-service-common</span></td><td><span class="file-path" onclick="openDrawer()">src/common/utils.py</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">15</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">migrations/V2.1__add_index.sql</span></td><td><span class="tag tag-sql">SQL</span></td><td style="font-size:12.5px;">新增</td><td><span class="tag tag-medium">中</span></td><td style="font-family:monospace;font-size:12.5px;">5</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;color:var(--text-muted);">user-service-common</span></td><td><span class="file-path" onclick="openDrawer()">src/common/constants.py</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-medium">中</span></td><td style="font-family:monospace;font-size:12.5px;">8</td><td><span class="tag tag-analyzing">分析中</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <div class="info">显示 1-6 / 共 254 条</div>
+          <div class="pages">
+            <button class="page-btn">&#8249;</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">...</button><button class="page-btn">43</button><button class="page-btn">&#8250;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Settings ===== -->
+<div class="page-section" id="page-settings">
+  <div class="layout">
+    <div class="sub-sidebar">
+      <div class="sub-sidebar-section">
+        <div class="sub-sidebar-title">设置</div>
+        <div class="sub-sidebar-item active"><span class="icon">&#9881;</span> 通用设置</div>
+        <div class="sub-sidebar-item"><span class="icon">&#128273;</span> 凭证管理</div>
+        <div class="sub-sidebar-item"><span class="icon">&#129302;</span> LLM 配置</div>
+        <div class="sub-sidebar-item"><span class="icon">&#9881;</span> 性能配置</div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="page-header"><div><h1>系统设置</h1><div class="subtitle">配置变更影响分析服务的运行参数</div></div></div>
+      <div class="card" style="margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:600;margin-bottom:20px;">LLM 深度分析配置</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">LLM 提供商</label><select class="form-select"><option>OpenAI (GPT-4)</option><option>DeepSeek</option><option>通义千问</option><option>自定义端点</option><option>禁用</option></select></div>
+          <div class="form-group"><label class="form-label">模型名称</label><input class="form-input" value="gpt-4o" placeholder="gpt-4o"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">API Key</label><input class="form-input" type="password" value="sk-***************" placeholder="输入 API Key"></div>
+          <div class="form-group"><label class="form-label">自定义端点 URL</label><input class="form-input" placeholder="https://api.example.com/v1/chat/completions"></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;"><button class="btn btn-primary">保存配置</button><button class="btn btn-secondary">测试连接</button></div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:600;margin-bottom:20px;">性能配置</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">最大并发任务数</label><input class="form-input" type="number" value="3" min="1" max="10"></div>
+          <div class="form-group"><label class="form-label">影响分析深度</label><select class="form-select"><option>深度 1（快速）</option><option selected>深度 2（推荐）</option><option>深度 3（深度）</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Git Diff 超时（秒）</label><input class="form-input" type="number" value="120" min="30"></div>
+          <div class="form-group"><label class="form-label">报告保留天数</label><input class="form-input" type="number" value="90" min="7"></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:8px;">保存配置</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div style="font-size:15px;font-weight:600;">凭证管理</div><button class="btn btn-primary">+ 添加凭证</button></div>
+        <table style="width:100%;"><thead><tr><th>名称</th><th>类型</th><th>创建时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:500;color:var(--text-primary);">GitHub Token</td><td><span class="tag tag-code">Bearer Token</span></td><td style="font-size:12.5px;">2026-05-10</td><td><button class="btn-ghost" style="font-size:12px;">编辑</button><button class="btn-ghost" style="font-size:12px;color:var(--danger);">删除</button></td></tr>
+          <tr><td style="font-weight:500;color:var(--text-primary);">GitLab Deploy Key</td><td><span class="tag tag-config">SSH Key</span></td><td style="font-size:12.5px;">2026-04-22</td><td><button class="btn-ghost" style="font-size:12px;">编辑</button><button class="btn-ghost" style="font-size:12px;color:var(--danger);">删除</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main-wrapper -->
+
+<!-- ===== Change Item Detail Drawer ===== -->
+<div class="drawer-overlay" id="itemDrawer">
+  <div class="drawer">
+    <div class="drawer-header"><h3>变更项详情</h3><button class="btn-ghost" onclick="closeDrawer()" style="font-size:18px;">&times;</button></div>
+    <div class="drawer-body">
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span class="file-path" style="font-size:13px;">src/auth/token_validator.py</span>
+          <span class="tag tag-code">代码</span><span class="tag tag-critical">严重</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px;">
+          <div><span style="color:var(--text-muted);">变更类型：</span>修改</div>
+          <div><span style="color:var(--text-muted);">语言：</span>Python</div>
+          <div><span style="color:var(--text-muted);">+行数：</span><span style="color:var(--success);">+45</span></div>
+          <div><span style="color:var(--text-muted);">-行数：</span><span style="color:var(--danger);">-23</span></div>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Diff 内容</div>
+        <div class="diff-viewer">
+          <div class="diff-line context"><span class="line-num">42</span><span>def validate_token(token: str) -> TokenResult:</span></div>
+          <div class="diff-line removed"><span class="line-num">43</span><span>-    if not token or len(token) < 10:</span></div>
+          <div class="diff-line removed"><span class="line-num">44</span><span>-        return TokenResult.invalid("too_short")</span></div>
+          <div class="diff-line added"><span class="line-num">43</span><span>+    if not token or len(token) < MIN_TOKEN_LENGTH:</span></div>
+          <div class="diff-line added"><span class="line-num">44</span><span>+        return TokenResult.invalid("token_too_short")</span></div>
+          <div class="diff-line added"><span class="line-num">45</span><span>+    if token.startswith("revoked:"):</span></div>
+          <div class="diff-line added"><span class="line-num">46</span><span>+        return TokenResult.invalid("revoked_token")</span></div>
+          <div class="diff-line context"><span class="line-num">47</span><span>    payload = jwt.decode(token, SECRET_KEY)</span></div>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">影响范围</div>
+        <div class="impact-graph-mini">
+          <div class="graph-nodes">
+            <div class="graph-node center" style="left:45%;top:40%;">TV</div>
+            <div class="graph-node depth1" style="left:15%;top:20%;">AH</div>
+            <div class="graph-node depth1" style="left:75%;top:15%;">LM</div>
+            <div class="graph-node depth1" style="left:20%;top:65%;">UR</div>
+            <div class="graph-node depth1" style="left:70%;top:60%;">SM</div>
+            <div class="graph-node depth2" style="left:5%;top:45%;">T1</div>
+            <div class="graph-node depth2" style="left:90%;top:35%;">T2</div>
+            <div class="graph-node depth2" style="left:50%;top:85%;">T3</div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0.3;">
+              <line x1="50%" y1="45%" x2="20%" y2="25%" stroke="var(--high)" stroke-width="1"/>
+              <line x1="50%" y1="45%" x2="80%" y2="20%" stroke="var(--high)" stroke-width="1"/>
+              <line x1="50%" y1="45%" x2="25%" y2="70%" stroke="var(--high)" stroke-width="1"/>
+              <line x1="50%" y1="45%" x2="75%" y2="65%" stroke="var(--high)" stroke-width="1"/>
+              <line x1="20%" y1="25%" x2="8%" y2="50%" stroke="var(--medium)" stroke-width="1"/>
+              <line x1="80%" y1="20%" x2="93%" y2="40%" stroke="var(--medium)" stroke-width="1"/>
+              <line x1="25%" y1="70%" x2="55%" y2="88%" stroke="var(--medium)" stroke-width="1"/>
+            </svg>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:11px;color:var(--text-muted);">
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--critical);margin-right:4px;"></span>直接变更</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--high);margin-right:4px;"></span>深度 1</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--medium);margin-right:4px;"></span>深度 2</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">受影响节点 (24)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="tag tag-critical">validate_token()</span>
+          <span class="tag tag-high">AuthHandler.check()</span>
+          <span class="tag tag-high">LoginMiddleware.verify()</span>
+          <span class="tag tag-high">UserRouter.authenticate()</span>
+          <span class="tag tag-medium">SessionManager.create()</span>
+          <span class="tag tag-medium">test_token_validation</span>
+          <span class="tag tag-medium">test_auth_flow</span>
+          <span class="tag tag-low">+17 更多...</span>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:14px;">分析结论</div>
+        <div class="form-group"><label class="form-label">影响等级</label><select class="form-select"><option>无影响</option><option>低</option><option>中</option><option selected>高</option><option>严重</option></select></div>
+        <div class="form-group"><label class="form-label">风险描述</label><textarea class="form-input" rows="3" style="resize:vertical;">token 验证逻辑变更影响所有依赖认证的接口，新增的 revoked 前缀检查需要下游服务同步更新</textarea></div>
+        <div class="form-group"><label class="form-label">建议措施</label><textarea class="form-input" rows="2" style="resize:vertical;">1. 通知下游团队 token 错误码变更 2. 执行全量认证回归测试</textarea></div>
+        <div class="form-group"><label class="form-label">最终结论</label><textarea class="form-input" rows="2" style="resize:vertical;">高风险变更，需回归测试并通知下游服务</textarea></div>
+        <div style="display:flex;gap:10px;"><button class="btn btn-primary">提交结论</button><button class="btn btn-secondary">&#129302; LLM 深度分析</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchPage(page, navEl) {
+  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.context-dropdown, .system-dropdown').forEach(d => d.classList.remove('show'));
+}
+
+// Track previous page for settings toggle
+window._previousPage = 'home';
+window._previousNavIndex = 0;
+
+const _origSwitchPage = switchPage;
+switchPage = function(page, navEl) {
+  // Save previous page before switching (but not when switching to settings)
+  if (page !== 'settings') {
+    const activePage = document.querySelector('.page-section.active');
+    if (activePage && activePage.id !== 'page-settings') {
+      window._previousPage = activePage.id.replace('page-', '');
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach((item, i) => { if (item.classList.contains('active')) window._previousNavIndex = i; });
+    }
+  }
+  _origSwitchPage(page, navEl);
+};
+
+function toggleSettings() {
+  const activePage = document.querySelector('.page-section.active');
+  if (activePage && activePage.id === 'page-settings') {
+    // Already on settings, go back
+    const navItems = document.querySelectorAll('.nav-item');
+    switchPage(window._previousPage, navItems[window._previousNavIndex] || null);
+  } else {
+    switchPage('settings', null);
+  }
+}
+
+function enterProject() {
+  const taskNav = document.querySelectorAll('.nav-item')[1];
+  switchPage('tasks', taskNav);
+}
+
+function openDrawer() { document.getElementById('itemDrawer').classList.add('active'); }
+function closeDrawer() { document.getElementById('itemDrawer').classList.remove('active'); }
+
+function toggleDropdown(id) {
+  const dropdown = document.getElementById(id);
+  const wasOpen = dropdown.classList.contains('show');
+  document.querySelectorAll('.context-dropdown, .system-dropdown').forEach(d => d.classList.remove('show'));
+  if (!wasOpen) dropdown.classList.add('show');
+}
+
+function switchSystem(name, code) {
+  // Update selector text
+  const selector = document.querySelector('.system-selector');
+  selector.children[1].textContent = name;
+  // Update active state in dropdown
+  document.querySelectorAll('#home-sys-dropdown .system-dropdown-item').forEach(item => {
+    item.classList.toggle('active', item.querySelector('.sys-name').textContent === name);
+  });
+  // Close dropdown
+  document.getElementById('home-sys-dropdown').classList.remove('show');
+
+  // Simulate project list change
+  const projectData = {
+    '核心业务系统': [
+      { name: 'notification-svc', repos: [{url:'git@github.com:org/notification-svc.git',branch:'main'}], tasks: 1, done: 1, running: 0, creator:'王五', created:'2026-04-10', updated:'2026-05-15' },
+      { name: 'payment-gateway', repos: [{url:'git@github.com:org/payment-gateway.git',branch:'main'},{url:'git@github.com:org/payment-sdk.git',branch:'develop'}], tasks: 2, done: 2, running: 0, creator:'张三', created:'2026-03-05', updated:'2026-05-28' },
+      { name: 'api-gateway', repos: [{url:'git@github.com:org/api-gateway.git',branch:'main'}], tasks: 4, done: 3, running: 1, creator:'李四', created:'2026-02-28', updated:'2026-06-12' },
+      { name: 'order-service', repos: [{url:'git@github.com:org/order-service.git',branch:'develop'}], tasks: 5, done: 4, running: 1, creator:'李四', created:'2026-02-20', updated:'2026-06-10' },
+      { name: 'user-service', repos: [{url:'git@github.com:org/user-service.git',branch:'main'},{url:'git@github.com:org/user-service-common.git',branch:'main'}], tasks: 3, done: 2, running: 1, creator:'张三', created:'2026-01-15', updated:'2026-06-14' }
+    ],
+    '基础平台系统': [
+      { name: 'log-collector', repos: [{url:'git@github.com:org/log-collector.git',branch:'develop'}], tasks: 3, done: 3, running: 0, creator:'李四', created:'2026-04-05', updated:'2026-05-30' },
+      { name: 'service-registry', repos: [{url:'git@github.com:org/service-registry.git',branch:'main'}], tasks: 2, done: 2, running: 0, creator:'张三', created:'2026-03-12', updated:'2026-05-20' },
+      { name: 'config-center', repos: [{url:'git@github.com:org/config-center.git',branch:'main'},{url:'git@github.com:org/config-sdk.git',branch:'main'}], tasks: 4, done: 3, running: 1, creator:'赵六', created:'2026-01-20', updated:'2026-06-08' }
+    ],
+    '数据中台': [
+      { name: 'etl-engine', repos: [{url:'git@github.com:org/etl-engine.git',branch:'main'}], tasks: 1, done: 1, running: 0, creator:'赵六', created:'2026-03-20', updated:'2026-05-18' },
+      { name: 'data-pipeline', repos: [{url:'git@github.com:org/data-pipeline.git',branch:'main'},{url:'git@github.com:org/data-common.git',branch:'main'}], tasks: 2, done: 2, running: 0, creator:'王五', created:'2026-02-15', updated:'2026-05-25' }
+    ]
+  };
+
+  const projects = projectData[name] || [];
+  window._currentProjects = projects;
+  const total = projects.length;
+  document.getElementById('project-count').textContent = total + ' 个项目';
+  renderProjectPage(1);
+}
+
+function renderRepos(repos) {
+  if (repos.length === 1) return `<span class="mono" style="font-size:11px;color:var(--text-secondary);">${repos[0].url}</span>`;
+  return `<div style="display:flex;flex-direction:column;gap:2px;">${repos.map((r,i) => `<span class="mono" style="font-size:11px;color:${i===0?'var(--text-secondary)':'var(--text-muted)'};">${r.url}</span>`).join('')}</div>`;
+}
+function renderBranches(repos) {
+  if (repos.length === 1) return `<span class="tag tag-code">${repos[0].branch}</span>`;
+  return `<div style="display:flex;flex-direction:column;gap:2px;">${repos.map(r => `<span class="tag tag-code">${r.branch}</span>`).join('')}</div>`;
+}
+
+function renderProjectPage(page) {
+  const projects = window._currentProjects || [];
+  const list = document.getElementById('project-list');
+  const pagination = document.getElementById('project-pagination');
+  const total = projects.length;
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  page = Math.max(1, Math.min(page, totalPages));
+  const start = (page - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  const pageData = projects.slice(start, end);
+
+  list.innerHTML = `<table>
+    <thead><tr><th>项目名称</th><th>代码仓库</th><th>默认分支</th><th>任务数</th><th>已完成</th><th>进行中</th><th>创建人</th><th>创建时间 &#8595;</th><th>更新时间</th><th class="sticky-right">操作</th></tr></thead>
+    <tbody>${pageData.map(p => `
+      <tr onclick="enterProject()" style="cursor:pointer;">
+        <td style="font-weight:600;color:var(--text-primary);">${p.name}</td>
+        <td>${renderRepos(p.repos)}</td>
+        <td>${renderBranches(p.repos)}</td>
+        <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">${p.tasks}</td>
+        <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:var(--success);">${p.done}</td>
+        <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;color:${p.running > 0 ? 'var(--warning)' : 'var(--text-muted)'};">${p.running}</td>
+        <td style="font-size:12.5px;">${p.creator}</td>
+        <td style="font-size:12.5px;">${p.created}</td>
+        <td style="font-size:12.5px;">${p.updated}</td>
+        <td class="sticky-right"><button class="btn-ghost" style="font-size:12px;">进入</button></td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
+
+  pagination.innerHTML = `
+    <div class="info">显示 ${total > 0 ? start+1 : 0}-${end} / 共 ${total} 条</div>
+    <div class="pages">
+      <button class="page-btn" ${page<=1?'disabled':''} onclick="renderProjectPage(${page-1})">&#8249;</button>
+      ${Array.from({length:totalPages},(_,i)=>`<button class="page-btn ${i+1===page?'active':''}" onclick="renderProjectPage(${i+1})">${i+1}</button>`).join('')}
+      <button class="page-btn" ${page>=totalPages?'disabled':''} onclick="renderProjectPage(${page+1})">&#8250;</button>
+    </div>`;
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function addRepo() {
+  const list = document.getElementById('repo-list');
+  const row = document.createElement('div');
+  row.className = 'repo-row';
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  row.innerHTML = `
+    <input class="form-input" placeholder="Git 仓库地址" style="flex:2;">
+    <select class="form-select" style="width:90px;flex-shrink:0;">
+      <option>main</option><option>develop</option><option>master</option>
+    </select>
+    <select class="form-select" style="width:130px;flex-shrink:0;" onchange="onCredentialChange(this)">
+      <option value="">无凭证</option>
+      <option value="github-token">GitHub Token</option>
+      <option value="gitlab-key">GitLab Key</option>
+      <option value="new">+ 新建凭证</option>
+    </select>
+    <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;flex-shrink:0;white-space:nowrap;" onclick="validateRepo(this)">校验</button>
+    <span class="repo-status" style="flex-shrink:0;min-width:20px;"></span>
+    <button class="btn-ghost" style="color:var(--danger);font-size:16px;padding:4px 6px;flex-shrink:0;" onclick="removeRepo(this)" title="移除">&times;</button>
+  `;
+  list.appendChild(row);
+}
+
+function removeRepo(btn) {
+  const list = document.getElementById('repo-list');
+  if (list.querySelectorAll('.repo-row').length > 1) {
+    btn.closest('.repo-row').remove();
+  }
+}
+
+function onCredentialChange(sel) {
+  if (sel.value === 'new') {
+    sel.value = '';
+    openModal('modal-new-system'); // reuse or redirect to credential creation
+  }
+}
+
+function validateRepo(btn) {
+  const row = btn.closest('.repo-row');
+  const status = row.querySelector('.repo-status');
+  const repoInput = row.querySelector('input.form-input');
+
+  if (!repoInput.value.trim()) {
+    status.innerHTML = '<span style="font-size:12px;color:var(--danger);">&#10007;</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  status.innerHTML = '<span style="font-size:12px;color:var(--accent);">&#9679;</span>';
+
+  setTimeout(() => {
+    const success = Math.random() > 0.3;
+    if (success) {
+      status.innerHTML = '<span style="font-size:12px;color:var(--success);">&#10003;</span>';
+    } else {
+      status.innerHTML = '<span style="font-size:12px;color:var(--danger);">&#10007;</span>';
+    }
+    btn.disabled = false;
+    btn.textContent = '校验';
+  }, 1000);
+}
+
+// Close dropdowns/modals when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.context-selector') && !e.target.closest('.system-selector')) {
+    document.querySelectorAll('.context-dropdown, .system-dropdown').forEach(d => d.classList.remove('show'));
+  }
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('show');
+  }
+});
+
+// Scroll shadow indicator for sticky-right tables
+document.querySelectorAll('.table-scroll-wrapper').forEach(wrapper => {
+  wrapper.addEventListener('scroll', function() {
+    this.classList.toggle('is-scrolled', this.scrollLeft > 0);
+  });
+  // Initial check
+  wrapper.classList.toggle('is-scrolled', wrapper.scrollLeft > 0);
+});
+
+// ===== Task List Pagination =====
+window._taskData = [
+  { name:'6月迭代变更分析', repos:['user-service','user-service-common'], versions:['v2.0.0 → v2.1.0','v1.5.0 → v1.6.0'], status:'running', progress:65, files:'2,034', items:'3,847', analyzed:0, analyzedTotal:3847, risk:null, time:'3m 42s', creator:'张三', created:'2026-06-16 10:30', updated:'2026-06-16 10:34' },
+  { name:'5月迭代变更分析', repos:['user-service','user-service-common'], versions:['v1.9.0 → v2.0.0','v1.4.0 → v1.5.0'], status:'completed', progress:100, files:'1,856', items:'2,943', analyzed:254, analyzedTotal:2943, risk:0.72, time:'7m 18s', creator:'张三', created:'2026-05-20 14:15', updated:'2026-05-20 14:22' },
+  { name:'4月迭代变更分析', repos:['user-service'], versions:['v1.8.0 → v1.9.0'], status:'failed', progress:38, files:'1,203', items:null, analyzed:0, analyzedTotal:0, risk:null, time:'2m 05s', creator:'李四', created:'2026-04-18 09:00', updated:'2026-04-18 09:02' }
+];
+
+function renderTaskPage(page) {
+  const tasks = window._taskData || [];
+  const wrapper = document.getElementById('task-table-wrapper');
+  const total = tasks.length;
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  page = Math.max(1, Math.min(page, totalPages));
+  const start = (page - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  const pageData = tasks.slice(start, end);
+
+  function renderTaskRepos(repos) {
+    if (repos.length === 1) return `<span class="mono" style="font-size:11px;color:var(--text-secondary);">${repos[0]}</span>`;
+    return `<div style="display:flex;flex-direction:column;gap:2px;">${repos.map((r,i) => `<span class="mono" style="font-size:11px;color:${i===0?'var(--text-secondary)':'var(--text-muted)'};">${r}</span>`).join('')}</div>`;
+  }
+  function renderTaskVersions(versions) {
+    if (versions.length === 1) return `<span class="mono" style="font-size:11px;">${versions[0]}</span>`;
+    return `<div style="display:flex;flex-direction:column;gap:2px;">${versions.map(v => `<span class="mono" style="font-size:11px;">${v}</span>`).join('')}</div>`;
+  }
+
+  const statusMap = {
+    running: { tag:'tag-running', icon:'&#9679;', label:'运行中' },
+    completed: { tag:'tag-completed', icon:'&#10003;', label:'已完成' },
+    failed: { tag:'tag-failed', icon:'&#10007;', label:'失败' }
+  };
+  const progressClass = { running:'', completed:'success', failed:'danger' };
+
+  const tbody = document.getElementById('task-tbody');
+  tbody.innerHTML = pageData.map(t => {
+    const s = statusMap[t.status];
+    const riskHtml = t.risk != null ? `<span style="font-weight:700;color:var(--high);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">${t.risk}</span>` : '<span style="font-size:12.5px;color:var(--text-muted);">-</span>';
+    const itemsHtml = t.items || '<span style="font-size:12.5px;color:var(--text-muted);">-</span>';
+    const analyzedPct = t.analyzedTotal > 0 ? Math.round(t.analyzed / t.analyzedTotal * 100) : 0;
+    const analyzedHtml = t.analyzedTotal > 0
+      ? `<div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:60px;"><div class="progress-fill success" style="width:${analyzedPct}%"></div></div><span style="font-size:11px;color:var(--success);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">${t.analyzed}/${t.analyzedTotal}</span></div>`
+      : '<span style="font-size:12.5px;color:var(--text-muted);">-</span>';
+    let actions = '';
+    if (t.status === 'running') {
+      actions = `<button class="btn-ghost" style="font-size:12px;" title="取消" onclick="event.stopPropagation();">&#10005;</button>`;
+    } else if (t.status === 'completed') {
+      actions = `<button class="btn-ghost" style="font-size:12px;color:var(--accent);" onclick="event.stopPropagation();switchPage('report',document.querySelectorAll('.nav-item')[2])">报告</button><button class="btn-ghost" style="font-size:12px;" title="删除" onclick="event.stopPropagation();">&#128465;</button>`;
+    } else if (t.status === 'failed') {
+      actions = `<button class="btn-ghost" style="font-size:12px;color:var(--warning);" title="重试" onclick="event.stopPropagation();">&#8635; 重试</button><button class="btn-ghost" style="font-size:12px;" title="删除" onclick="event.stopPropagation();">&#128465;</button>`;
+    }
+    const rowClick = t.status === 'completed' ? `onclick="switchPage('report',document.querySelectorAll('.nav-item')[2])" style="cursor:pointer;"` : '';
+    return `<tr ${rowClick}>
+      <td style="font-weight:600;color:var(--text-primary);">${t.name}</td>
+      <td>${renderTaskRepos(t.repos)}</td>
+      <td>${renderTaskVersions(t.versions)}</td>
+      <td><span class="tag ${s.tag}">${s.icon} ${s.label}</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:80px;"><div class="progress-fill ${progressClass[t.status]}" style="width:${t.progress}%"></div></div><span style="font-size:12px;color:var(--${t.status==='completed'?'success':t.status==='failed'?'danger':'accent'});font-family:'Cascadia Code','Fira Code','Consolas',monospace;">${t.progress}%</span></div></td>
+      <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">${t.files}</td>
+      <td style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12.5px;">${itemsHtml}</td>
+      <td>${analyzedHtml}</td>
+      <td>${riskHtml}</td>
+      <td style="font-size:12.5px;">${t.time}</td>
+      <td style="font-size:12.5px;">${t.creator}</td>
+      <td style="font-size:12.5px;">${t.created}</td>
+      <td style="font-size:12.5px;">${t.updated}</td>
+      <td class="sticky-right">${actions}</td>
+    </tr>`;
+  }).join('');
+
+  const pagination = document.getElementById('task-pagination');
+  pagination.innerHTML = `
+    <div class="info">显示 ${total > 0 ? start+1 : 0}-${end} / 共 ${total} 条</div>
+    <div class="pages">
+      <button class="page-btn" ${page<=1?'disabled':''} onclick="renderTaskPage(${page-1})">&#8249;</button>
+      ${Array.from({length:totalPages},(_,i)=>`<button class="page-btn ${i+1===page?'active':''}" onclick="renderTaskPage(${i+1})">${i+1}</button>`).join('')}
+      <button class="page-btn" ${page>=totalPages?'disabled':''} onclick="renderTaskPage(${page+1})">&#8250;</button>
+    </div>`;
+}
+
+// Initialize task pagination
+renderTaskPage(1);
+</script>
+
+<!-- ===== Modal: New Task ===== -->
+<div class="modal-overlay" id="modal-new-task">
+  <div class="modal" style="width:560px;">
+    <div class="modal-header">
+      <h3>创建变更影响分析任务</h3>
+      <button class="btn-ghost" onclick="closeModal('modal-new-task')" style="font-size:18px;">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">任务名称 <span style="color:var(--danger);">*</span></label>
+        <input class="form-input" placeholder="例如：6月迭代变更分析">
+      </div>
+      <div class="form-group">
+        <label class="form-label">代码仓库版本范围 <span style="color:var(--danger);">*</span></label>
+        <div id="task-repo-list" style="display:flex;flex-direction:column;gap:10px;">
+          <div class="task-repo-row" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span class="mono" style="font-size:12px;color:var(--accent);font-weight:600;">user-service</span>
+              <span style="font-size:11px;color:var(--text-muted);">main</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input class="form-input" placeholder="起始版本" style="flex:1;font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12px;">
+              <span style="color:var(--text-muted);">→</span>
+              <input class="form-input" placeholder="目标版本" style="flex:1;font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12px;">
+            </div>
+          </div>
+          <div class="task-repo-row" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+              <span class="mono" style="font-size:12px;color:var(--text-muted);font-weight:600;">user-service-common</span>
+              <span style="font-size:11px;color:var(--text-muted);">main</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input class="form-input" placeholder="起始版本" style="flex:1;font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12px;">
+              <span style="color:var(--text-muted);">→</span>
+              <input class="form-input" placeholder="目标版本" style="flex:1;font-family:'Cascadia Code','Fira Code','Consolas',monospace;font-size:12px;">
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">支持 Tag、分支名或 Commit Hash，所有仓库的变更将合并分析</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">影响分析深度</label>
+        <select class="form-select">
+          <option>深度 1（快速，仅直接依赖）</option>
+          <option selected>深度 2（推荐，含间接依赖）</option>
+          <option>深度 3（深度，全链路追踪）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <textarea class="form-input" rows="2" placeholder="可选，记录本次分析的背景或目的" style="resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-new-task')">取消</button>
+      <button class="btn btn-primary">创建并执行</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: New System ===== -->
+<div class="modal-overlay" id="modal-new-system">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>新建系统</h3>
+      <button class="btn-ghost" onclick="closeModal('modal-new-system')" style="font-size:18px;">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">系统名称 <span style="color:var(--danger);">*</span></label>
+        <input class="form-input" placeholder="例如：核心业务系统">
+      </div>
+      <div class="form-group">
+        <label class="form-label">系统编号 <span style="color:var(--danger);">*</span></label>
+        <input class="form-input" placeholder="例如：CORE-BIZ" style="font-family:'Cascadia Code','Fira Code','Consolas',monospace;">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">唯一标识，创建后不可修改，仅支持大写字母、数字和连字符</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-new-system')">取消</button>
+      <button class="btn btn-primary">创建系统</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: New Project ===== -->
+<div class="modal-overlay" id="modal-new-project">
+  <div class="modal" style="width:600px;">
+    <div class="modal-header">
+      <h3>创建项目</h3>
+      <button class="btn-ghost" onclick="closeModal('modal-new-project')" style="font-size:18px;">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">归属系统</label>
+        <input class="form-input" value="核心业务系统 (CORE-BIZ)" disabled style="opacity:0.6;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">项目名称 <span style="color:var(--danger);">*</span></label>
+        <input class="form-input" placeholder="例如：user-service">
+      </div>
+      <div class="form-group">
+        <label class="form-label">代码仓库 <span style="color:var(--danger);">*</span></label>
+        <div id="repo-list" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="repo-row" style="display:flex;gap:8px;align-items:center;">
+            <input class="form-input" placeholder="Git 仓库地址" style="flex:2;">
+            <select class="form-select" style="width:90px;flex-shrink:0;">
+              <option>main</option><option>develop</option><option>master</option>
+            </select>
+            <select class="form-select" style="width:130px;flex-shrink:0;" onchange="onCredentialChange(this)">
+              <option value="">无凭证</option>
+              <option value="github-token">GitHub Token</option>
+              <option value="gitlab-key">GitLab Key</option>
+              <option value="new">+ 新建凭证</option>
+            </select>
+            <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;flex-shrink:0;white-space:nowrap;" onclick="validateRepo(this)">校验</button>
+            <span class="repo-status" style="flex-shrink:0;min-width:20px;"></span>
+            <button class="btn-ghost" style="color:var(--danger);font-size:16px;padding:4px 6px;flex-shrink:0;" onclick="removeRepo(this)" title="移除">&times;</button>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="margin-top:10px;font-size:12.5px;color:var(--accent);" onclick="addRepo()">+ 添加代码仓库</button>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">支持添加多个代码仓库，分析时将合并计算变更影响。绑定凭证可访问私有仓库。</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-new-project')">取消</button>
+      <button class="btn btn-primary">创建项目</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
