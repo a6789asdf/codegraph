@@ -467,6 +467,12 @@ program
 
       clack.outro('Done');
       cg.destroy();
+
+      // Register project in global registry for API server discovery
+      try {
+        const { registerProject } = await import('../api/registry');
+        registerProject(projectPath);
+      } catch { /* non-fatal */ }
     } catch (err) {
       clack.log.error(`Failed: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
@@ -521,6 +527,12 @@ program
       } catch { /* non-fatal */ }
 
       success(`Removed CodeGraph from ${projectPath}`);
+
+      // Unregister project from global registry
+      try {
+        const { unregisterProject } = await import('../api/registry');
+        unregisterProject(projectPath);
+      } catch { /* non-fatal */ }
     } catch (err) {
       error(`Failed to uninitialize: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
@@ -1091,8 +1103,11 @@ program
   .description('Start CodeGraph as an MCP server for AI assistants')
   .option('-p, --path <path>', 'Project path (optional for MCP mode, uses rootUri from client)')
   .option('--mcp', 'Run as MCP server (stdio transport)')
+  .option('--api', 'Run as HTTP API server for the web UI')
+  .option('--dev', 'Dev mode: API only, frontend runs independently')
+  .option('--port <port>', 'API server port (default: 3000, or CODEGRAPH_API_PORT)')
   .option('--no-watch', 'Disable the file watcher (no auto-sync; useful on slow filesystems like WSL2 /mnt drives)')
-  .action(async (options: { path?: string; mcp?: boolean; watch?: boolean }) => {
+  .action(async (options: { path?: string; mcp?: boolean; api?: boolean; dev?: boolean; port?: string; watch?: boolean }) => {
     const projectPath = options.path ? resolveProjectPath(options.path) : undefined;
 
     // Commander sets watch=false when --no-watch is passed. Route it through
@@ -1108,6 +1123,15 @@ program
         const server = new MCPServer(projectPath);
         await server.start();
         // Server will run until terminated
+      } else if (options.api) {
+        // Start HTTP API server for the web UI
+        const { startApiServer } = await import('../api/index');
+        const port = options.port ? parseInt(options.port, 10) : undefined;
+        startApiServer({
+          port,
+          dev: options.dev,
+          staticDir: options.dev ? undefined : path.join(__dirname, '..', '..', 'web', 'dist'),
+        });
       } else {
         // Default: show info about MCP mode.
         // Use stderr so stdout stays clean for any piped/stdio usage.

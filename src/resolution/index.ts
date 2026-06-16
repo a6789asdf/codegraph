@@ -606,7 +606,14 @@ export class ReferenceResolver {
     // from './barrel'` where the barrel has `export { signIn as login }
     // from './auth'`) intentionally call a name that has no
     // declaration anywhere — only the renamed upstream symbol does.
+    //
+    // File-level `imports` references use module paths (e.g. './http')
+    // as referenceName — these are never symbol names, so the
+    // hasAnyPossibleMatch check always fails and would discard them.
+    // They resolve to file nodes, not symbol nodes, so skip the
+    // pre-filter entirely for this reference kind.
     if (
+      ref.referenceKind !== 'imports' &&
       !this.hasAnyPossibleMatch(ref.referenceName) &&
       !this.matchesAnyImport(ref) &&
       !this.frameworks.some((f) => f.claimsReference?.(ref.referenceName))
