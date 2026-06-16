@@ -250,6 +250,35 @@ body {
 
 .main-content { flex: 1; padding: 28px 36px; overflow-y: auto; max-width: 1200px; }
 
+/* Tree Navigation */
+.tree-node { cursor: pointer; user-select: none; }
+.tree-node-header {
+  display: flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 12.5px;
+  color: var(--text-secondary); border-radius: 4px; margin: 1px 8px; transition: all 0.15s;
+}
+.tree-node-header:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.tree-node-header.active { background: var(--accent-bg); color: var(--accent); }
+.tree-node-header .arrow {
+  display: inline-flex; width: 14px; height: 14px; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--text-muted); transition: transform 0.15s; flex-shrink: 0;
+}
+.tree-node-header .arrow.expanded { transform: rotate(90deg); }
+.tree-node-header .arrow.leaf { visibility: hidden; }
+.tree-node-header .node-icon { font-size: 13px; flex-shrink: 0; }
+.tree-node-header .node-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree-node-header .node-count {
+  font-size: 10px; color: var(--text-muted); background: var(--bg-elevated);
+  padding: 1px 6px; border-radius: 8px; flex-shrink: 0; font-family: 'Cascadia Code','Fira Code','Consolas',monospace;
+}
+.tree-node-header.active .node-count { background: rgba(59,130,246,0.2); color: var(--accent); }
+.tree-children { display: none; }
+.tree-children.expanded { display: block; }
+
+#tree-container::-webkit-scrollbar { width: 5px; }
+#tree-container::-webkit-scrollbar-track { background: transparent; }
+#tree-container::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 3px; }
+#tree-container::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
 /* ===== Page Header ===== */
 .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
 .page-header h1 { font-size: 22px; font-weight: 700; color: var(--text-primary); }
@@ -1174,7 +1203,20 @@ code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; 
       </div>
     </div>
 
-    <div class="table-container">
+    <!-- Tree Navigation + Change List -->
+    <div style="display:flex;gap:16px;margin-top:0;">
+      <!-- Tree Sidebar -->
+      <div id="tree-sidebar" style="width:280px;flex-shrink:0;padding:0;overflow:hidden;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);min-height:400px;">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-primary);display:flex;align-items:center;justify-content:space-between;">
+          <span>变更目录</span>
+          <span style="font-size:11px;color:var(--text-muted);font-weight:400;">254 项</span>
+        </div>
+        <div id="tree-container" style="padding:8px 0;overflow-y:auto;"></div>
+      </div>
+
+      <!-- Change List -->
+      <div style="flex:1;min-width:0;">
+        <div class="table-container">
         <div class="table-toolbar">
           <div class="filters">
             <span class="filter-chip active">全部 (254)</span>
@@ -1208,6 +1250,7 @@ code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; 
             <button class="page-btn">&#8249;</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">...</button><button class="page-btn">43</button><button class="page-btn">&#8250;</button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -1658,6 +1701,168 @@ function renderTaskPage(page) {
 
 // Initialize task pagination
 renderTaskPage(1);
+
+// ===== Report Tree Navigation =====
+const treeData = [
+  { label: 'user-service', icon: '&#128193;', count: 186, children: [
+    { label: 'src', icon: '&#128194;', count: 142, children: [
+      { label: 'auth', icon: '&#128194;', count: 38, children: [
+        { label: 'token_validator.py', icon: '&#128196;', count: 12, children: [
+          { label: 'validateToken()', icon: '&#9881;', count: 5 },
+          { label: 'refreshToken()', icon: '&#9881;', count: 4 },
+          { label: 'revokeToken()', icon: '&#9881;', count: 3 }
+        ]},
+        { label: 'auth_handler.go', icon: '&#128196;', count: 26 }
+      ]},
+      { label: 'api', icon: '&#128194;', count: 52, children: [
+        { label: 'user_handler.go', icon: '&#128196;', count: 18 },
+        { label: 'order_handler.go', icon: '&#128196;', count: 22 },
+        { label: 'middleware.go', icon: '&#128196;', count: 12 }
+      ]},
+      { label: 'service', icon: '&#128194;', count: 32, children: [
+        { label: 'user_service.py', icon: '&#128196;', count: 20 },
+        { label: 'cache_service.py', icon: '&#128196;', count: 12 }
+      ]},
+      { label: 'common', icon: '&#128194;', count: 20 }
+    ]},
+    { label: 'config', icon: '&#128194;', count: 28, children: [
+      { label: 'database.yaml', icon: '&#128196;', count: 12 },
+      { label: 'redis.yaml', icon: '&#128196;', count: 8 },
+      { label: 'app.properties', icon: '&#128196;', count: 8 }
+    ]},
+    { label: 'migrations', icon: '&#128194;', count: 16, children: [
+      { label: 'V2.1__add_index.sql', icon: '&#128196;', count: 5 },
+      { label: 'V2.1__alter_users.sql', icon: '&#128196;', count: 6 },
+      { label: 'V2.0__add_orders.sql', icon: '&#128196;', count: 5 }
+    ]}
+  ]},
+  { label: 'user-service-common', icon: '&#128193;', count: 68, children: [
+    { label: 'src', icon: '&#128194;', count: 48, children: [
+      { label: 'common', icon: '&#128194;', count: 48, children: [
+        { label: 'utils.py', icon: '&#128196;', count: 15 },
+        { label: 'constants.py', icon: '&#128196;', count: 8 },
+        { label: 'logger.py', icon: '&#128196;', count: 12 },
+        { label: 'exceptions.py', icon: '&#128196;', count: 13 }
+      ]}
+    ]},
+    { label: 'scripts', icon: '&#128194;', count: 20, children: [
+      { label: 'deploy.sh', icon: '&#128196;', count: 8 },
+      { label: 'build.sh', icon: '&#128196;', count: 7 },
+      { label: 'migrate.sh', icon: '&#128196;', count: 5 }
+    ]}
+  ]}
+];
+
+function renderTree(nodes, container, depth) {
+  depth = depth || 0;
+  nodes.forEach(node => {
+    const hasChildren = node.children && node.children.length > 0;
+    const div = document.createElement('div');
+    div.className = 'tree-node';
+
+    const header = document.createElement('div');
+    header.className = 'tree-node-header';
+    header.style.paddingLeft = (12 + depth * 16) + 'px';
+    header.innerHTML = `<span class="arrow ${hasChildren ? '' : 'leaf'}">&#9654;</span><span class="node-icon">${node.icon || ''}</span><span class="node-label">${node.label}</span><span class="node-count">${node.count}</span>`;
+
+    header.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Toggle expand/collapse
+      if (hasChildren) {
+        const arrow = header.querySelector('.arrow');
+        const childrenDiv = div.querySelector('.tree-children');
+        arrow.classList.toggle('expanded');
+        childrenDiv.classList.toggle('expanded');
+      }
+      // Set active
+      document.querySelectorAll('.tree-node-header').forEach(h => h.classList.remove('active'));
+      header.classList.add('active');
+      // Filter change list (simulated)
+      filterChangeList(node.label, node.count);
+    });
+
+    div.appendChild(header);
+
+    if (hasChildren) {
+      const childrenDiv = document.createElement('div');
+      childrenDiv.className = 'tree-children';
+      renderTree(node.children, childrenDiv, depth + 1);
+      div.appendChild(childrenDiv);
+    }
+
+    container.appendChild(div);
+  });
+}
+
+function filterChangeList(nodeLabel, count) {
+  // Update toolbar filter chips to show current selection
+  const filters = document.querySelector('#page-report .filters');
+  if (filters) {
+    const chips = filters.querySelectorAll('.filter-chip');
+    chips.forEach(c => c.classList.remove('active'));
+    // Update "全部" chip text to show context
+    if (nodeLabel && chips[0]) {
+      chips[0].textContent = '全部 (254)';
+      chips[0].classList.remove('active');
+      // Add visual indicator for current tree selection
+      let treeChip = filters.querySelector('.tree-filter-chip');
+      if (!treeChip) {
+        treeChip = document.createElement('span');
+        treeChip.className = 'filter-chip active tree-filter-chip';
+        filters.insertBefore(treeChip, filters.children[1]);
+      }
+      treeChip.textContent = nodeLabel + ' (' + count + ')';
+      treeChip.classList.add('active');
+    }
+  }
+  // Update pagination info
+  const pagination = document.querySelector('#page-report .pagination .info');
+  if (pagination) {
+    pagination.textContent = '显示 1-' + Math.min(6, count) + ' / 共 ' + count + ' 条';
+  }
+}
+
+// Initialize tree
+const treeContainer = document.getElementById('tree-container');
+if (treeContainer) {
+  renderTree(treeData, treeContainer, 0);
+  // Expand first level by default
+  const firstArrow = treeContainer.querySelector('.tree-node-header .arrow');
+  const firstChildren = treeContainer.querySelector('.tree-node .tree-children');
+  if (firstArrow && firstChildren) {
+    firstArrow.classList.add('expanded');
+    firstChildren.classList.add('expanded');
+  }
+  // Set "全部" as default active - click the header area
+  const allChip = document.querySelector('#page-report .filter-chip');
+  if (allChip) {
+    allChip.addEventListener('click', function() {
+      document.querySelectorAll('.tree-node-header').forEach(h => h.classList.remove('active'));
+      const treeChip = document.querySelector('.tree-filter-chip');
+      if (treeChip) treeChip.remove();
+      document.querySelectorAll('#page-report .filter-chip').forEach(c => c.classList.remove('active'));
+      allChip.classList.add('active');
+      const pagination = document.querySelector('#page-report .pagination .info');
+      if (pagination) pagination.textContent = '显示 1-6 / 共 254 条';
+    });
+  }
+
+  // Sync tree sidebar height with change list
+  function syncTreeHeight() {
+    const tableContainer = document.querySelector('#page-report .table-container');
+    const treeSidebar = document.getElementById('tree-sidebar');
+    const treeCont = document.getElementById('tree-container');
+    if (tableContainer && treeSidebar) {
+      const h = Math.max(tableContainer.offsetHeight, 400);
+      treeSidebar.style.height = h + 'px';
+      if (treeCont) treeCont.style.maxHeight = (h - 44) + 'px';
+    }
+  }
+  setTimeout(syncTreeHeight, 100);
+  window.addEventListener('resize', syncTreeHeight);
+  // Re-sync after tree expand/collapse
+  treeContainer.addEventListener('click', function() { setTimeout(syncTreeHeight, 50); });
+}
 </script>
 
 <!-- ===== Modal: New Task ===== -->
