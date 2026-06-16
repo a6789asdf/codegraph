@@ -1156,10 +1156,18 @@ code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:20px;">
       <div class="card">
         <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">变更概览</div>
-        <div style="display:flex;gap:20px;">
+        <div style="display:flex;gap:20px;margin-bottom:16px;">
           <div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">变更文件</div><div style="font-size:24px;font-weight:700;color:var(--accent);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">254</div></div>
           <div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">变更项</div><div style="font-size:24px;font-weight:700;color:var(--warning);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">387</div></div>
           <div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">受影响测试</div><div style="font-size:24px;font-weight:700;color:var(--danger);font-family:'Cascadia Code','Fira Code','Consolas',monospace;">342</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">变更分类</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-code" style="min-width:40px;justify-content:center;font-size:11px;white-space:nowrap;">代码</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:64%;height:100%;background:#7da5ff;border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:24px;text-align:right;">162</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-config" style="min-width:40px;justify-content:center;font-size:11px;white-space:nowrap;">配置</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:19%;height:100%;background:#c084fc;border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:24px;text-align:right;">48</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-sql" style="min-width:40px;justify-content:center;font-size:11px;white-space:nowrap;">SQL</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:9%;height:100%;background:#fbbf24;border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:24px;text-align:right;">22</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-script" style="min-width:40px;justify-content:center;font-size:11px;white-space:nowrap;">脚本</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:6%;height:100%;background:#34d399;border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:24px;text-align:right;">15</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-other" style="min-width:40px;justify-content:center;font-size:11px;white-space:nowrap;">其他</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:3%;height:100%;background:#94a3b8;border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:24px;text-align:right;">7</span></div>
         </div>
       </div>
       <div class="card">
@@ -1177,7 +1185,7 @@ code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; 
       <div class="card">
         <div style="font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text-primary);">风险分布</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-critical" style="width:40px;justify-content:center;font-size:11px;">严重</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:8%;height:100%;background:var(--critical);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">12</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-critical" style="min-width:40px;justify-content:center;font-size:11px;white-space:nowrap;">严重</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:8%;height:100%;background:var(--critical);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">12</span></div>
           <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-high" style="width:40px;justify-content:center;font-size:11px;">高</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:22%;height:100%;background:var(--high);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">35</span></div>
           <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-medium" style="width:40px;justify-content:center;font-size:11px;">中</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:45%;height:100%;background:var(--medium);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">78</span></div>
           <div style="display:flex;align-items:center;gap:8px;"><span class="tag tag-low" style="width:40px;justify-content:center;font-size:11px;">低</span><div style="flex:1;height:6px;background:var(--bg-elevated);border-radius:3px;overflow:hidden;"><div style="width:75%;height:100%;background:var(--low);border-radius:3px;"></div></div><span style="font-size:11px;color:var(--text-muted);min-width:20px;text-align:right;">129</span></div>
@@ -1218,30 +1226,21 @@ code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; 
       <div style="flex:1;min-width:0;">
         <div class="table-container">
         <div class="table-toolbar">
-          <div class="filters">
-            <span class="filter-chip active">全部 (254)</span>
-            <span class="filter-chip">user-service (186)</span>
-            <span class="filter-chip">user-service-common (68)</span>
-            <span style="color:var(--text-muted);font-size:12px;margin:0 4px;">|</span>
-            <span class="filter-chip">代码类 (162)</span>
-            <span class="filter-chip">配置类 (48)</span>
-            <span class="filter-chip">SQL类 (22)</span>
-            <span class="filter-chip">脚本类 (15)</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <select id="filter-risk" class="form-select" style="width:120px;padding:6px 10px;font-size:12px;"><option value="">风险等级</option><option value="critical">严重</option><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select>
+            <select id="filter-status" class="form-select" style="width:120px;padding:6px 10px;font-size:12px;"><option value="">分析状态</option><option value="pending">待分析</option><option value="analyzing">分析中</option><option value="concluded">已结论</option></select>
           </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <select class="form-select" style="width:120px;padding:6px 10px;font-size:12px;"><option>风险等级</option><option>严重</option><option>高</option><option>中</option><option>低</option></select>
-            <select class="form-select" style="width:120px;padding:6px 10px;font-size:12px;"><option>分析状态</option><option>待分析</option><option>分析中</option><option>已结论</option></select>
-          </div>
+          <button class="btn btn-primary" onclick="queryChangeList()" style="padding:6px 18px;font-size:12.5px;">查询</button>
         </div>
         <table>
-          <thead><tr><th style="width:30px;"><input type="checkbox"></th><th>代码仓库</th><th>文件路径</th><th>分类</th><th>变更类型</th><th>风险等级</th><th>影响节点</th><th>分析状态</th><th>操作</th></tr></thead>
+          <thead><tr><th style="width:30px;"><input type="checkbox"></th><th>变更文件</th><th>变更分类</th><th>变更类型</th><th>风险等级</th><th>影响节点</th><th>分析状态</th><th>操作</th></tr></thead>
           <tbody>
-            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">src/auth/token_validator.py</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-critical">严重</span></td><td style="font-family:monospace;font-size:12.5px;">24</td><td><span class="tag tag-concluded">已结论</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
-            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">src/api/user_handler.go</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">18</td><td><span class="tag tag-concluded">已结论</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
-            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">config/database.yaml</span></td><td><span class="tag tag-config">配置</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">12</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
-            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;color:var(--text-muted);">user-service-common</span></td><td><span class="file-path" onclick="openDrawer()">src/common/utils.py</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">15</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
-            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;">user-service</span></td><td><span class="file-path" onclick="openDrawer()">migrations/V2.1__add_index.sql</span></td><td><span class="tag tag-sql">SQL</span></td><td style="font-size:12.5px;">新增</td><td><span class="tag tag-medium">中</span></td><td style="font-family:monospace;font-size:12.5px;">5</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
-            <tr><td><input type="checkbox"></td><td><span class="mono" style="font-size:11px;color:var(--text-muted);">user-service-common</span></td><td><span class="file-path" onclick="openDrawer()">src/common/constants.py</span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-medium">中</span></td><td style="font-family:monospace;font-size:12.5px;">8</td><td><span class="tag tag-analyzing">分析中</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="file-path" onclick="openDrawer()">src/auth/token_validator.py</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+45</span> <span style="color:var(--danger);">-23</span></span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-critical">严重</span></td><td style="font-family:monospace;font-size:12.5px;">24</td><td><span class="tag tag-concluded">已结论</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="file-path" onclick="openDrawer()">src/api/user_handler.go</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+32</span> <span style="color:var(--danger);">-15</span></span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">18</td><td><span class="tag tag-concluded">已结论</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="file-path" onclick="openDrawer()">config/database.yaml</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+18</span> <span style="color:var(--danger);">-8</span></span></td><td><span class="tag tag-config">配置</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">12</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="file-path" onclick="openDrawer()">src/common/utils.py</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+28</span> <span style="color:var(--danger);">-12</span></span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-high">高</span></td><td style="font-family:monospace;font-size:12.5px;">15</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="file-path" onclick="openDrawer()">migrations/V2.1__add_index.sql</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+15</span> <span style="color:var(--danger);">-0</span></span></td><td><span class="tag tag-sql">SQL</span></td><td style="font-size:12.5px;">新增</td><td><span class="tag tag-medium">中</span></td><td style="font-family:monospace;font-size:12.5px;">5</td><td><span class="tag tag-pending">待分析</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
+            <tr><td><input type="checkbox"></td><td><span class="file-path" onclick="openDrawer()">src/common/constants.py</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+12</span> <span style="color:var(--danger);">-5</span></span></td><td><span class="tag tag-code">代码</span></td><td style="font-size:12.5px;">修改</td><td><span class="tag tag-medium">中</span></td><td style="font-family:monospace;font-size:12.5px;">8</td><td><span class="tag tag-analyzing">分析中</span></td><td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td></tr>
           </tbody>
         </table>
         <div class="pagination">
@@ -1308,11 +1307,14 @@ code, .mono { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; 
 
 </div><!-- end main-wrapper -->
 
-<!-- ===== Change Item Detail Drawer ===== -->
-<div class="drawer-overlay" id="itemDrawer">
-  <div class="drawer">
-    <div class="drawer-header"><h3>变更项详情</h3><button class="btn-ghost" onclick="closeDrawer()" style="font-size:18px;">&times;</button></div>
-    <div class="drawer-body">
+<!-- ===== Change Item Detail Modal ===== -->
+<div class="modal-overlay" id="itemDrawer">
+  <div class="modal" style="width:640px;max-height:85vh;display:flex;flex-direction:column;">
+    <div class="modal-header">
+      <h3>变更项详情</h3>
+      <button class="btn-ghost" onclick="closeDrawer()" style="font-size:18px;">&times;</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;flex:1;">
       <div style="margin-bottom:20px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
           <span class="file-path" style="font-size:13px;">src/auth/token_validator.py</span>
@@ -1438,8 +1440,8 @@ function enterProject() {
   switchPage('tasks', taskNav);
 }
 
-function openDrawer() { document.getElementById('itemDrawer').classList.add('active'); }
-function closeDrawer() { document.getElementById('itemDrawer').classList.remove('active'); }
+function openDrawer() { document.getElementById('itemDrawer').classList.add('show'); }
+function closeDrawer() { document.getElementById('itemDrawer').classList.remove('show'); }
 
 function toggleDropdown(id) {
   const dropdown = document.getElementById(id);
@@ -1704,59 +1706,63 @@ renderTaskPage(1);
 
 // ===== Report Tree Navigation =====
 const treeData = [
-  { label: 'user-service', icon: '&#128193;', count: 186, children: [
-    { label: 'src', icon: '&#128194;', count: 142, children: [
-      { label: 'auth', icon: '&#128194;', count: 38, children: [
-        { label: 'token_validator.py', icon: '&#128196;', count: 12, children: [
-          { label: 'validateToken()', icon: '&#9881;', count: 5 },
-          { label: 'refreshToken()', icon: '&#9881;', count: 4 },
-          { label: 'revokeToken()', icon: '&#9881;', count: 3 }
+  { label: 'user-service', icon: '&#128193;', count: 254, isProject: true, children: [
+    { label: 'user-service', icon: '&#128193;', count: 186, isRepo: true, repoKey: 'user-service', children: [
+      { label: 'src', icon: '&#128194;', count: 142, children: [
+        { label: 'auth', icon: '&#128194;', count: 38, children: [
+          { label: 'token_validator.py', icon: '&#128196;', count: 12, children: [
+            { label: 'validateToken()', icon: '&#9881;', count: 5 },
+            { label: 'refreshToken()', icon: '&#9881;', count: 4 },
+            { label: 'revokeToken()', icon: '&#9881;', count: 3 }
+          ]},
+          { label: 'auth_handler.go', icon: '&#128196;', count: 26 }
         ]},
-        { label: 'auth_handler.go', icon: '&#128196;', count: 26 }
+        { label: 'api', icon: '&#128194;', count: 52, children: [
+          { label: 'user_handler.go', icon: '&#128196;', count: 18 },
+          { label: 'order_handler.go', icon: '&#128196;', count: 22 },
+          { label: 'middleware.go', icon: '&#128196;', count: 12 }
+        ]},
+        { label: 'service', icon: '&#128194;', count: 32, children: [
+          { label: 'user_service.py', icon: '&#128196;', count: 20 },
+          { label: 'cache_service.py', icon: '&#128196;', count: 12 }
+        ]},
+        { label: 'common', icon: '&#128194;', count: 20 }
       ]},
-      { label: 'api', icon: '&#128194;', count: 52, children: [
-        { label: 'user_handler.go', icon: '&#128196;', count: 18 },
-        { label: 'order_handler.go', icon: '&#128196;', count: 22 },
-        { label: 'middleware.go', icon: '&#128196;', count: 12 }
+      { label: 'config', icon: '&#128194;', count: 28, children: [
+        { label: 'database.yaml', icon: '&#128196;', count: 12 },
+        { label: 'redis.yaml', icon: '&#128196;', count: 8 },
+        { label: 'app.properties', icon: '&#128196;', count: 8 }
       ]},
-      { label: 'service', icon: '&#128194;', count: 32, children: [
-        { label: 'user_service.py', icon: '&#128196;', count: 20 },
-        { label: 'cache_service.py', icon: '&#128196;', count: 12 }
-      ]},
-      { label: 'common', icon: '&#128194;', count: 20 }
-    ]},
-    { label: 'config', icon: '&#128194;', count: 28, children: [
-      { label: 'database.yaml', icon: '&#128196;', count: 12 },
-      { label: 'redis.yaml', icon: '&#128196;', count: 8 },
-      { label: 'app.properties', icon: '&#128196;', count: 8 }
-    ]},
-    { label: 'migrations', icon: '&#128194;', count: 16, children: [
-      { label: 'V2.1__add_index.sql', icon: '&#128196;', count: 5 },
-      { label: 'V2.1__alter_users.sql', icon: '&#128196;', count: 6 },
-      { label: 'V2.0__add_orders.sql', icon: '&#128196;', count: 5 }
-    ]}
-  ]},
-  { label: 'user-service-common', icon: '&#128193;', count: 68, children: [
-    { label: 'src', icon: '&#128194;', count: 48, children: [
-      { label: 'common', icon: '&#128194;', count: 48, children: [
-        { label: 'utils.py', icon: '&#128196;', count: 15 },
-        { label: 'constants.py', icon: '&#128196;', count: 8 },
-        { label: 'logger.py', icon: '&#128196;', count: 12 },
-        { label: 'exceptions.py', icon: '&#128196;', count: 13 }
+      { label: 'migrations', icon: '&#128194;', count: 16, children: [
+        { label: 'V2.1__add_index.sql', icon: '&#128196;', count: 5 },
+        { label: 'V2.1__alter_users.sql', icon: '&#128196;', count: 6 },
+        { label: 'V2.0__add_orders.sql', icon: '&#128196;', count: 5 }
       ]}
     ]},
-    { label: 'scripts', icon: '&#128194;', count: 20, children: [
-      { label: 'deploy.sh', icon: '&#128196;', count: 8 },
-      { label: 'build.sh', icon: '&#128196;', count: 7 },
-      { label: 'migrate.sh', icon: '&#128196;', count: 5 }
+    { label: 'user-service-common', icon: '&#128193;', count: 68, isRepo: true, repoKey: 'user-service-common', children: [
+      { label: 'src', icon: '&#128194;', count: 48, children: [
+        { label: 'common', icon: '&#128194;', count: 48, children: [
+          { label: 'utils.py', icon: '&#128196;', count: 15 },
+          { label: 'constants.py', icon: '&#128196;', count: 8 },
+          { label: 'logger.py', icon: '&#128196;', count: 12 },
+          { label: 'exceptions.py', icon: '&#128196;', count: 13 }
+        ]}
+      ]},
+      { label: 'scripts', icon: '&#128194;', count: 20, children: [
+        { label: 'deploy.sh', icon: '&#128196;', count: 8 },
+        { label: 'build.sh', icon: '&#128196;', count: 7 },
+        { label: 'migrate.sh', icon: '&#128196;', count: 5 }
+      ]}
     ]}
   ]}
 ];
 
-function renderTree(nodes, container, depth) {
+function renderTree(nodes, container, depth, parentRepoKey) {
   depth = depth || 0;
+  parentRepoKey = parentRepoKey || null;
   nodes.forEach(node => {
     const hasChildren = node.children && node.children.length > 0;
+    const nodeRepoKey = node.repoKey || parentRepoKey;
     const div = document.createElement('div');
     div.className = 'tree-node';
 
@@ -1777,8 +1783,14 @@ function renderTree(nodes, container, depth) {
       // Set active
       document.querySelectorAll('.tree-node-header').forEach(h => h.classList.remove('active'));
       header.classList.add('active');
-      // Filter change list (simulated)
-      filterChangeList(node.label, node.count);
+      // Store current tree selection
+      window._treeSelection = {
+        label: node.label,
+        count: node.count,
+        isProject: !!node.isProject,
+        isRepo: !!node.isRepo,
+        repoKey: nodeRepoKey
+      };
     });
 
     div.appendChild(header);
@@ -1786,7 +1798,7 @@ function renderTree(nodes, container, depth) {
     if (hasChildren) {
       const childrenDiv = document.createElement('div');
       childrenDiv.className = 'tree-children';
-      renderTree(node.children, childrenDiv, depth + 1);
+      renderTree(node.children, childrenDiv, depth + 1, nodeRepoKey);
       div.appendChild(childrenDiv);
     }
 
@@ -1794,31 +1806,101 @@ function renderTree(nodes, container, depth) {
   });
 }
 
-function filterChangeList(nodeLabel, count) {
-  // Update toolbar filter chips to show current selection
-  const filters = document.querySelector('#page-report .filters');
-  if (filters) {
-    const chips = filters.querySelectorAll('.filter-chip');
-    chips.forEach(c => c.classList.remove('active'));
-    // Update "全部" chip text to show context
-    if (nodeLabel && chips[0]) {
-      chips[0].textContent = '全部 (254)';
-      chips[0].classList.remove('active');
-      // Add visual indicator for current tree selection
-      let treeChip = filters.querySelector('.tree-filter-chip');
-      if (!treeChip) {
-        treeChip = document.createElement('span');
-        treeChip.className = 'filter-chip active tree-filter-chip';
-        filters.insertBefore(treeChip, filters.children[1]);
-      }
-      treeChip.textContent = nodeLabel + ' (' + count + ')';
-      treeChip.classList.add('active');
+// ===== 变更项列表数据 =====
+window._changeListData = [
+  { repo: 'user-service', path: 'src/auth/token_validator.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'critical', riskLabel: '严重', impactNodes: 24, status: 'concluded', statusLabel: '已结论', addLines: 45, delLines: 23 },
+  { repo: 'user-service', path: 'src/api/user_handler.go', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'high', riskLabel: '高', impactNodes: 18, status: 'concluded', statusLabel: '已结论', addLines: 32, delLines: 15 },
+  { repo: 'user-service', path: 'config/database.yaml', category: 'config', categoryLabel: '配置', changeType: '修改', risk: 'high', riskLabel: '高', impactNodes: 12, status: 'pending', statusLabel: '待分析', addLines: 18, delLines: 8 },
+  { repo: 'user-service-common', path: 'src/common/utils.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'high', riskLabel: '高', impactNodes: 15, status: 'pending', statusLabel: '待分析', addLines: 28, delLines: 12 },
+  { repo: 'user-service', path: 'migrations/V2.1__add_index.sql', category: 'sql', categoryLabel: 'SQL', changeType: '新增', risk: 'medium', riskLabel: '中', impactNodes: 5, status: 'pending', statusLabel: '待分析', addLines: 15, delLines: 0 },
+  { repo: 'user-service-common', path: 'src/common/constants.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'medium', riskLabel: '中', impactNodes: 8, status: 'analyzing', statusLabel: '分析中', addLines: 12, delLines: 5 },
+  { repo: 'user-service', path: 'src/auth/auth_handler.go', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'critical', riskLabel: '严重', impactNodes: 26, status: 'concluded', statusLabel: '已结论', addLines: 56, delLines: 30 },
+  { repo: 'user-service', path: 'src/api/order_handler.go', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'high', riskLabel: '高', impactNodes: 22, status: 'analyzing', statusLabel: '分析中', addLines: 38, delLines: 20 },
+  { repo: 'user-service', path: 'src/api/middleware.go', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'medium', riskLabel: '中', impactNodes: 12, status: 'pending', statusLabel: '待分析', addLines: 14, delLines: 6 },
+  { repo: 'user-service', path: 'src/service/user_service.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'high', riskLabel: '高', impactNodes: 20, status: 'concluded', statusLabel: '已结论', addLines: 42, delLines: 18 },
+  { repo: 'user-service', path: 'src/service/cache_service.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'low', riskLabel: '低', impactNodes: 12, status: 'pending', statusLabel: '待分析', addLines: 8, delLines: 3 },
+  { repo: 'user-service', path: 'config/redis.yaml', category: 'config', categoryLabel: '配置', changeType: '修改', risk: 'medium', riskLabel: '中', impactNodes: 8, status: 'pending', statusLabel: '待分析', addLines: 10, delLines: 4 },
+  { repo: 'user-service', path: 'config/app.properties', category: 'config', categoryLabel: '配置', changeType: '修改', risk: 'low', riskLabel: '低', impactNodes: 8, status: 'concluded', statusLabel: '已结论', addLines: 5, delLines: 2 },
+  { repo: 'user-service', path: 'migrations/V2.1__alter_users.sql', category: 'sql', categoryLabel: 'SQL', changeType: '新增', risk: 'medium', riskLabel: '中', impactNodes: 6, status: 'pending', statusLabel: '待分析', addLines: 12, delLines: 0 },
+  { repo: 'user-service', path: 'migrations/V2.0__add_orders.sql', category: 'sql', categoryLabel: 'SQL', changeType: '新增', risk: 'low', riskLabel: '低', impactNodes: 5, status: 'concluded', statusLabel: '已结论', addLines: 8, delLines: 0 },
+  { repo: 'user-service-common', path: 'src/common/logger.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'low', riskLabel: '低', impactNodes: 12, status: 'pending', statusLabel: '待分析', addLines: 6, delLines: 3 },
+  { repo: 'user-service-common', path: 'src/common/exceptions.py', category: 'code', categoryLabel: '代码', changeType: '修改', risk: 'medium', riskLabel: '中', impactNodes: 13, status: 'analyzing', statusLabel: '分析中', addLines: 18, delLines: 7 },
+  { repo: 'user-service-common', path: 'scripts/deploy.sh', category: 'script', categoryLabel: '脚本', changeType: '修改', risk: 'medium', riskLabel: '中', impactNodes: 8, status: 'pending', statusLabel: '待分析', addLines: 10, delLines: 5 },
+  { repo: 'user-service-common', path: 'scripts/build.sh', category: 'script', categoryLabel: '脚本', changeType: '修改', risk: 'low', riskLabel: '低', impactNodes: 7, status: 'pending', statusLabel: '待分析', addLines: 4, delLines: 2 },
+  { repo: 'user-service-common', path: 'scripts/migrate.sh', category: 'script', categoryLabel: '脚本', changeType: '修改', risk: 'low', riskLabel: '低', impactNodes: 5, status: 'concluded', statusLabel: '已结论', addLines: 3, delLines: 1 }
+];
+
+// 当前树形导航选中状态
+window._treeSelection = null;
+
+// 查询变更项列表
+function queryChangeList() {
+  const riskFilter = document.getElementById('filter-risk').value;
+  const statusFilter = document.getElementById('filter-status').value;
+  const treeSel = window._treeSelection;
+
+  let filtered = window._changeListData.slice();
+
+  // 根据树形导航筛选
+  if (treeSel) {
+    if (treeSel.isProject) {
+      // 项目根节点，显示全部，不筛选
+    } else if (treeSel.isRepo) {
+      // 代码库节点，按仓库筛选
+      filtered = filtered.filter(item => item.repo === treeSel.repoKey);
+    } else {
+      // 路径/文件节点，按路径前缀筛选
+      filtered = filtered.filter(item => {
+        // 尝试匹配仓库+路径前缀
+        if (treeSel.repoKey && item.repo !== treeSel.repoKey) return false;
+        return item.path.startsWith(treeSel.label) || item.path.includes(treeSel.label);
+      });
     }
   }
-  // Update pagination info
+
+  // 根据风险等级筛选
+  if (riskFilter) {
+    filtered = filtered.filter(item => item.risk === riskFilter);
+  }
+
+  // 根据分析状态筛选
+  if (statusFilter) {
+    filtered = filtered.filter(item => item.status === statusFilter);
+  }
+
+  renderChangeList(filtered);
+}
+
+function renderChangeList(data) {
+  const tbody = document.querySelector('#page-report .table-container tbody');
   const pagination = document.querySelector('#page-report .pagination .info');
+  const total = data.length;
+
+  const categoryTagMap = { code: 'tag-code', config: 'tag-config', sql: 'tag-sql', script: 'tag-script', other: 'tag-other' };
+  const riskTagMap = { critical: 'tag-critical', high: 'tag-high', medium: 'tag-medium', low: 'tag-low' };
+  const statusTagMap = { pending: 'tag-pending', analyzing: 'tag-analyzing', concluded: 'tag-concluded' };
+
+  if (tbody) {
+    if (total === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">无匹配结果</td></tr>';
+    } else {
+      tbody.innerHTML = data.map(item => `
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-path" onclick="openDrawer()">${item.path}</span> <span style="font-size:11px;font-family:'Cascadia Code','Fira Code','Consolas',monospace;"><span style="color:var(--success);">+${item.addLines}</span> <span style="color:var(--danger);">-${item.delLines}</span></span></td>
+          <td><span class="tag ${categoryTagMap[item.category] || 'tag-other'}">${item.categoryLabel}</span></td>
+          <td style="font-size:12.5px;">${item.changeType}</td>
+          <td><span class="tag ${riskTagMap[item.risk]}">${item.riskLabel}</span></td>
+          <td style="font-family:monospace;font-size:12.5px;">${item.impactNodes}</td>
+          <td><span class="tag ${statusTagMap[item.status]}">${item.statusLabel}</span></td>
+          <td><button class="btn-ghost" style="font-size:12px;" onclick="openDrawer()">详情</button></td>
+        </tr>
+      `).join('');
+    }
+  }
+
   if (pagination) {
-    pagination.textContent = '显示 1-' + Math.min(6, count) + ' / 共 ' + count + ' 条';
+    pagination.textContent = total > 0 ? `显示 1-${total} / 共 ${total} 条` : '无匹配结果';
   }
 }
 
@@ -1826,26 +1908,28 @@ function filterChangeList(nodeLabel, count) {
 const treeContainer = document.getElementById('tree-container');
 if (treeContainer) {
   renderTree(treeData, treeContainer, 0);
-  // Expand first level by default
-  const firstArrow = treeContainer.querySelector('.tree-node-header .arrow');
-  const firstChildren = treeContainer.querySelector('.tree-node .tree-children');
-  if (firstArrow && firstChildren) {
-    firstArrow.classList.add('expanded');
-    firstChildren.classList.add('expanded');
+  // Expand first two levels by default (project + repos)
+  const firstArrows = treeContainer.querySelectorAll('.tree-node-header .arrow');
+  const firstChildrenDivs = treeContainer.querySelectorAll('.tree-node > .tree-children');
+  if (firstArrows[0] && firstChildrenDivs[0]) {
+    firstArrows[0].classList.add('expanded');
+    firstChildrenDivs[0].classList.add('expanded');
   }
-  // Set "全部" as default active - click the header area
-  const allChip = document.querySelector('#page-report .filter-chip');
-  if (allChip) {
-    allChip.addEventListener('click', function() {
-      document.querySelectorAll('.tree-node-header').forEach(h => h.classList.remove('active'));
-      const treeChip = document.querySelector('.tree-filter-chip');
-      if (treeChip) treeChip.remove();
-      document.querySelectorAll('#page-report .filter-chip').forEach(c => c.classList.remove('active'));
-      allChip.classList.add('active');
-      const pagination = document.querySelector('#page-report .pagination .info');
-      if (pagination) pagination.textContent = '显示 1-6 / 共 254 条';
-    });
+  // Expand repo level too
+  const repoChildren = firstChildrenDivs[0] ? firstChildrenDivs[0].querySelectorAll(':scope > .tree-node > .tree-children') : [];
+  const repoArrows = firstChildrenDivs[0] ? firstChildrenDivs[0].querySelectorAll(':scope > .tree-node > .tree-node-header .arrow') : [];
+  repoChildren.forEach(c => c.classList.add('expanded'));
+  repoArrows.forEach(a => a.classList.add('expanded'));
+
+  // Default: select project root node
+  const projectHeader = treeContainer.querySelector('.tree-node-header');
+  if (projectHeader) {
+    projectHeader.classList.add('active');
+    window._treeSelection = { label: 'user-service', count: 254, isProject: true, isRepo: false, repoKey: null };
   }
+
+  // Initial render
+  renderChangeList(window._changeListData);
 
   // Sync tree sidebar height with change list
   function syncTreeHeight() {
